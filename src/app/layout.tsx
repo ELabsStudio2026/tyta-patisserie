@@ -13,7 +13,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  // Título que aparece en la pestaña y en Google
+  
+  
+  metadataBase: new URL("https://tyta-patisserie.vercel.app"),
+// Título que aparece en la pestaña y en Google
   title: "Tyta Patisserie | Excelencia y Calidad en CABA", 
   
   // Descripción optimizada con palabras clave críticas
