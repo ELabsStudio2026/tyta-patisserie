@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+/* 1. TIPOGRAFÍA PRIMARIA: DINER FATT */
+@font-face {
+  font-family: 'Diner Fatt';
+  src: url('/fonts/Diner-Fatt.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 2. TIPOGRAFÍA SECUNDARIA: MERMAID */
+@font-face {
+  font-family: 'Mermaid';
+  src: url('/fonts/Mermaid.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 3. TIPOGRAFÍA SECUNDARIA: JOSEFIN SANS */
+@font-face {
+  font-family: 'Josefin Sans';
+  src: url('/fonts/JosefinSans-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Configuración base para que toda la web use la identidad de marca */
+body {
+  font-family: 'Josefin Sans', sans-serif;
+}
