@@ -50,7 +50,8 @@ export default function Home() {
               <Image 
                 src="/images/pavlovas-generated.jpg" 
                 alt="Pavlovas Tyta" 
-                fill 
+                fill
+                sizes="(max-width: 768px) 100vw, 400px" // <--- Agrega esta línea 
                 /* FIX DEFINITIVO: scale-[2.2] elimina el margen blanco por completo */
                 className="object-cover scale-[2.2] group-hover:scale-[2.35] transition-transform duration-700" 
               />
@@ -125,7 +126,8 @@ export default function Home() {
              <Image 
                 src="/images/local.jpg" 
                 alt="Vitrina de especialidades Tyta Patisserie" 
-                fill 
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw" 
                 className="object-cover group-hover:scale-105 transition-transform duration-700" 
               />
           </div>
