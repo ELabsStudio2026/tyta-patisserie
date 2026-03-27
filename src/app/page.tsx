@@ -5,7 +5,22 @@ import Image from "next/image";
 export default function Home() {
   return (
     <main className="min-h-screen bg-white">
-      {/* BOTONES HERO */}
+      {/* 1. HERO SECTION */}
+      <section className="bg-[#5E7361] text-white min-h-[80vh] flex flex-col items-center justify-center px-6 text-center relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none uppercase font-['Diner_Fatt'] text-[20vw] flex items-center justify-center whitespace-nowrap">
+          Tyta Tyta Tyta
+        </div>
+        <div className="z-10">
+          <h1 className="text-7xl md:text-9xl font-['Diner_Fatt'] tracking-tighter leading-none mb-4">
+            TYTA PATISSERIE
+          </h1>
+          <p className="text-sm md:text-xl font-['Josefin_Sans'] tracking-[0.5em] uppercase mb-8 opacity-90">
+            by Su Fernandez
+          </p>
+          <h2 className="text-2xl md:text-4xl font-['Mermaid'] italic mb-12 text-[#F6CDD7]">
+            Excelencia y Calidad
+          </h2>
+          {/* BOTONES HERO */}
           <div className="flex flex-col md:flex-row gap-6 justify-center items-center mt-4">
             {/* Botón Principal: WhatsApp */}
             <a 
@@ -31,6 +46,8 @@ export default function Home() {
               </span>
             </div>
           </div>
+        </div>
+      </section>
 
       {/* 2. SECCIÓN ESPECIALIDADES */}
       <section className="py-24 px-6 max-w-7xl mx-auto bg-white">
