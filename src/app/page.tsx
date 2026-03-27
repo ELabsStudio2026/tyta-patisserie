@@ -32,15 +32,18 @@ export default function Home() {
               Pedir por WhatsApp
             </a>
 
-            {/* Botón Secundario: E-commerce (Activo) */}
-            <a 
-              href="https://tienda.tytapatisserie.com.ar"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-transparent border border-[#EDB2D1] text-[#EDB2D1] px-10 py-5 rounded-full font-josefin font-bold uppercase tracking-widest hover:bg-[#EDB2D1] hover:text-[#2B4233] transition-all inline-block text-center"
-            >
-              Tienda Online
-            </a>
+            {/* Botón Secundario: E-commerce (Deshabilitado temporalmente) */}
+            <div className="relative inline-block">
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#2B4233] text-white text-[9px] px-3 py-1 rounded-full tracking-[0.2em] border border-[#EDB2D1] whitespace-nowrap z-10 font-josefin uppercase">
+                Próximamente
+              </span>
+              <button 
+                disabled
+                className="bg-transparent border border-[#EDB2D1] text-[#EDB2D1] px-10 py-5 rounded-full font-josefin font-bold uppercase tracking-widest opacity-50 cursor-not-allowed inline-block text-center w-full"
+              >
+                Tienda Online
+              </button>
+            </div>
           </div>
         </div>
       </section>
