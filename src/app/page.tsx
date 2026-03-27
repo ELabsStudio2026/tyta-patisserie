@@ -5,31 +5,32 @@ import Image from "next/image";
 export default function Home() {
   return (
     <main className="min-h-screen bg-white">
-      {/* 1. HERO SECTION */}
-      <section className="bg-[#5E7361] text-white min-h-[80vh] flex flex-col items-center justify-center px-6 text-center relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none uppercase font-['Diner_Fatt'] text-[20vw] flex items-center justify-center whitespace-nowrap">
-          Tyta Tyta Tyta
-        </div>
-        <div className="z-10">
-          <h1 className="text-7xl md:text-9xl font-['Diner_Fatt'] tracking-tighter leading-none mb-4">
-            TYTA PATISSERIE
-          </h1>
-          <p className="text-sm md:text-xl font-['Josefin_Sans'] tracking-[0.5em] uppercase mb-8 opacity-90">
-            by Su Fernandez
-          </p>
-          <h2 className="text-2xl md:text-4xl font-['Mermaid'] italic mb-12 text-[#F6CDD7]">
-            Excelencia y Calidad
-          </h2>
-          <a 
-            href="https://wa.me/5491130302451" 
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-[#EDB2D1] text-[#2B4233] px-12 py-5 rounded-full font-['Josefin_Sans'] font-bold uppercase tracking-widest hover:scale-105 transition-all shadow-2xl inline-block"
-          >
-            Pedir por WhatsApp
-          </a>
-        </div>
-      </section>
+      {/* BOTONES HERO */}
+          <div className="flex flex-col md:flex-row gap-6 justify-center items-center mt-4">
+            {/* Botón Principal: WhatsApp */}
+            <a 
+              href="https://wa.me/5491130302451" 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-[#EDB2D1] text-[#2B4233] px-10 py-5 rounded-full font-['Josefin_Sans'] font-bold uppercase tracking-widest hover:scale-105 transition-all shadow-2xl inline-block"
+            >
+              Pedir por WhatsApp
+            </a>
+
+            {/* Botón Secundario: E-commerce (Próximamente) */}
+            <div className="relative group">
+              <button 
+                disabled
+                className="bg-transparent border border-[#EDB2D1] text-[#EDB2D1] px-10 py-5 rounded-full font-['Josefin_Sans'] font-bold uppercase tracking-widest cursor-not-allowed opacity-70"
+              >
+                Tienda Online
+              </button>
+              {/* Etiqueta flotante */}
+              <span className="absolute -top-3 -right-2 bg-[#2B4233] text-[#F6CDD7] text-[9px] font-['Josefin_Sans'] font-bold uppercase tracking-[0.2em] px-3 py-1.5 rounded-full border border-[#EDB2D1] animate-pulse shadow-lg">
+                Próximamente
+              </span>
+            </div>
+          </div>
 
       {/* 2. SECCIÓN ESPECIALIDADES */}
       <section className="py-24 px-6 max-w-7xl mx-auto bg-white">
