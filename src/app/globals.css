@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+@theme {
+  --font-diner: "Diner Fatt", sans-serif;
+  --font-mermaid: "Mermaid", serif;
+  --font-josefin: "Josefin Sans", sans-serif;
+}
+
 /* 1. TIPOGRAFÍA PRIMARIA: DINER FATT */
 @font-face {
   font-family: 'Diner Fatt';
