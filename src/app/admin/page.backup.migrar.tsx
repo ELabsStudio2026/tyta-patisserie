@@ -166,7 +166,7 @@ export default function AdminPage() {
           <tbody className="divide-y divide-gray-50">
             {filtered.map((p) => (
               <tr key={p.id} className="hover:bg-gray-50/20 transition-colors">
-                <td className="px-6 py-1.5 flex items-center gap-3 font-bold"><img src={p.image_url || '/images/placeholder.jpg'} className="w-8 h-8 rounded-lg object-cover border" /><div className="flex flex-col"><span className="text-sm font-bold leading-tight">{p.name}</span><span className="text-[8px] uppercase opacity-40 tracking-wider font-black">{p.category}</span></div></td>
+                <td className="px-6 py-1.5 flex items-center gap-3 font-bold"><img alt="Tyta Patisserie" src={p.image_url || '/images/placeholder.jpg'} className="w-8 h-8 rounded-lg object-cover border" /><div className="flex flex-col"><span className="text-sm font-bold leading-tight">{p.name}</span><span className="text-[8px] uppercase opacity-40 tracking-wider font-black">{p.category}</span></div></td>
                 <td className="px-4 py-1.5 text-center"><button onClick={async () => { await supabase.from('products').update({is_visible: !p.is_visible}).eq('id', p.id); fetchProducts(); }} className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors cursor-pointer ${p.is_visible ? "bg-[#2B4233]" : "bg-gray-200"}`}><span className={`inline-block h-2.5 w-2.5 transform rounded-full bg-white transition-transform ${p.is_visible ? "translate-x-4" : "translate-x-1"}`} /></button></td>
                 <td className="px-4 py-1.5 text-center font-bold text-sm">{p.stock}</td>
                 <td className="px-4 py-1.5 text-center font-mono text-sm italic font-black">{p.cost}</td>
@@ -186,7 +186,7 @@ export default function AdminPage() {
             <h2 className="text-4xl font-diner mb-6 uppercase">{editingProduct ? 'EDITAR' : 'NUEVO'}</h2>
             <form onSubmit={handleSave} className="space-y-3">
               <div className="flex flex-col items-center gap-2 p-3 border rounded-xl bg-gray-50/50">
-                <img src={editingProduct?.image_url || newProduct.image_url || "/images/placeholder.jpg"} className="w-16 h-16 rounded-full object-cover shadow-sm border-2 border-white" />
+                <img alt="Tyta Patisserie" src={editingProduct?.image_url || newProduct.image_url || "/images/placeholder.jpg"} className="w-16 h-16 rounded-full object-cover shadow-sm border-2 border-white" />
                 <input type="text" placeholder="URL Imagen" className="w-full p-2 text-[9px] border rounded-lg text-center bg-white" value={editingProduct ? editingProduct.image_url : newProduct.image_url} onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, image_url: e.target.value}) : setNewProduct({...newProduct, image_url: e.target.value})} />
               </div>
               <div className="space-y-1"><label className="text-[10px] font-black uppercase text-gray-700">Nombre</label><input type="text" value={editingProduct ? editingProduct.name : newProduct.name} className="w-full p-2 bg-gray-50 border-none rounded-lg outline-none font-bold text-sm" onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, name: e.target.value}) : setNewProduct({...newProduct, name: e.target.value})} required /></div>

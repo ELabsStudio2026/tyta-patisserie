@@ -154,7 +154,7 @@ const handleFinalSubmit = async () => {
             {filteredProducts.map((product) => (
               <div key={product.id} onClick={() => setSelectedProduct(product)} className="group flex flex-col items-center cursor-pointer relative">
                 <div className="relative aspect-square w-full rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden bg-white border border-[#EDB2D1]/10 shadow-sm transition-all duration-500 group-hover:shadow-xl">
-                  <img src={product.image_url || '/images/placeholder.jpg'} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                  <img alt="Tyta Patisserie" src={product.image_url || '/images/placeholder.jpg'} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                   {Number(product.stock) > 0 && (
                     <div onClick={(e) => addToCart(product, e)} className="absolute bottom-0 right-0 z-30 flex items-end group/buy">
                       <span className="bg-[#EDB2D1] text-[#2B4233] text-[7px] font-black uppercase px-3 py-2 opacity-0 group-hover/buy:opacity-100 transition-all rounded-tl-xl translate-x-2 group-hover/buy:translate-x-0 shadow-sm">Comprar</span>
@@ -196,7 +196,7 @@ const handleFinalSubmit = async () => {
           <div className="absolute inset-0 bg-[#2B4233]/60 backdrop-blur-md" onClick={() => setSelectedProduct(null)} />
           <div className="relative bg-[#FDFBF7] w-full max-w-2xl rounded-[3rem] overflow-hidden shadow-2xl flex flex-col md:flex-row">
             <button onClick={() => setSelectedProduct(null)} className="absolute top-6 right-6 z-10 bg-white/80 text-[#2B4233] w-10 h-10 rounded-full flex items-center justify-center font-bold">✕</button>
-            <div className="w-full md:w-1/2 aspect-square"><img src={selectedProduct.image_url} className="w-full h-full object-cover" /></div>
+            <div className="w-full md:w-1/2 aspect-square"><img alt="Tyta Patisserie" src={selectedProduct.image_url} className="w-full h-full object-cover" /></div>
             <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col">
               <span className="text-[9px] font-black uppercase text-[#EDB2D1] mb-2">{selectedProduct.category}</span>
               <h2 className="text-4xl font-diner uppercase text-[#2B4233] mb-4 tracking-tighter leading-none">{selectedProduct.name}</h2>
@@ -235,7 +235,7 @@ const handleFinalSubmit = async () => {
                   {cart.length === 0 ? <p className="opacity-30 uppercase font-black text-center py-20 tracking-widest">Nada por aquí aún</p> : 
                     cart.map(item => (
                       <div key={item.id} className="flex gap-4 items-center bg-white p-4 rounded-[2rem] shadow-sm border border-[#EDB2D1]/5">
-                        <img src={item.image_url} className="w-16 h-16 rounded-2xl object-cover" />
+                        <img alt="Tyta Patisserie" src={item.image_url} className="w-16 h-16 rounded-2xl object-cover" />
                         <div className="flex-1">
                           <h4 className="font-bold text-sm text-[#2B4233]">{item.name}</h4>
                           <div className="flex items-center gap-3 mt-2">

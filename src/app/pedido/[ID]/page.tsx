@@ -97,8 +97,7 @@ export default function TicketPage() {
         <div className="relative flex flex-col items-center z-10 text-[#2B4233]">
           <span className="text-[8px] font-black uppercase tracking-[0.7em] opacity-20 mb-8 italic text-center">Security Digital Comanda</span>
           
-          <img src="/images/tyta-logo.png" alt="Tyta Patisserie" className="w-52 h-auto mb-12 object-contain" />
-
+          <img src="/images/tyta-logo.png" alt="Tyta Patisserie Logo" className="w-52 h-auto mb-12 object-contain" />
           <div className="w-full space-y-4 mb-10 text-[10px] uppercase font-black tracking-widest border-y border-gray-100 py-8">
             <div className="flex justify-between items-center">
               <span className="opacity-30 italic font-medium">Ref. Única:</span>

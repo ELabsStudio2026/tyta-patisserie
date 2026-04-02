@@ -96,7 +96,7 @@ export default function TiendaPage() {
                   
                   {/* Contenedor de Imagen con RIBBON */}
                   <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden bg-white border border-[#EDB2D1]/10 shadow-sm transition-all duration-500 group-hover:shadow-2xl group-hover:-translate-y-2">
-                    <img 
+                    <img alt="Tyta Patisserie" 
                       src={product.image_url || '/images/placeholder.jpg'} 
                       alt={product.name}
                       className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${isAgotado ? 'grayscale opacity-80' : ''}`}
