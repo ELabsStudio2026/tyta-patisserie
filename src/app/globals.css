@@ -4,6 +4,9 @@
   --font-diner: "Diner Fatt", sans-serif;
   --font-mermaid: "Mermaid", serif;
   --font-josefin: "Josefin Sans", sans-serif;
+
+  /* NUEVA ANIMACIÓN: Fade In Up */
+  --animate-fade-in-up: fade-in-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* 1. TIPOGRAFÍA PRIMARIA: DINER FATT */
@@ -36,4 +39,22 @@
 /* Configuración base para que toda la web use la identidad de marca */
 body {
   font-family: 'Josefin Sans', sans-serif;
+}
+
+/* --- ANIMACIONES DE LA GRILLA --- */
+@keyframes customFadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reveal-card {
+  /* La tarjeta arranca invisible y la animación la revela hacia arriba */
+  opacity: 0;
+  animation: customFadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
