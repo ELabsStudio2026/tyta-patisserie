@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link"; // Importamos Link para la navegación interna
 
 export default function Home() {
   return (
@@ -20,30 +21,26 @@ export default function Home() {
           <h2 className="text-2xl md:text-4xl font-mermaid italic mb-12 text-[#F6CDD7]">
             Excelencia y Calidad
           </h2>
-          {/* BOTONES HERO */}
+          
+          {/* BOTONES HERO ACTUALIZADOS */}
           <div className="flex flex-col md:flex-row gap-6 justify-center items-center mt-4">
             {/* Botón Principal: WhatsApp */}
             <a 
               href="https://wa.me/5491130302451" 
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-[#EDB2D1] text-[#2B4233] px-10 py-5 rounded-full font-josefin font-bold uppercase tracking-widest hover:scale-105 transition-all shadow-2xl inline-block text-center"
+              className="bg-white text-[#2B4233] px-10 py-5 rounded-full font-josefin font-bold uppercase tracking-widest hover:scale-105 transition-all shadow-2xl inline-block text-center border-2 border-white"
             >
               Pedir por WhatsApp
             </a>
 
-            {/* Botón Secundario: E-commerce (Deshabilitado temporalmente) */}
-            <div className="relative inline-block">
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#2B4233] text-white text-[9px] px-3 py-1 rounded-full tracking-[0.2em] border border-[#EDB2D1] whitespace-nowrap z-10 font-josefin uppercase">
-                Próximamente
-              </span>
-              <button 
-                disabled
-                className="bg-transparent border border-[#EDB2D1] text-[#EDB2D1] px-10 py-5 rounded-full font-josefin font-bold uppercase tracking-widest opacity-50 cursor-not-allowed inline-block text-center w-full"
-              >
-                Tienda Online
-              </button>
-            </div>
+            {/* Botón E-commerce: ¡HABILITADO! */}
+            <Link 
+              href="/tienda" 
+              className="bg-[#EDB2D1] text-[#2B4233] px-10 py-5 rounded-full font-josefin font-bold uppercase tracking-widest hover:scale-105 transition-all shadow-2xl inline-block text-center border-2 border-[#EDB2D1]"
+            >
+              Tienda Online
+            </Link>
           </div>
         </div>
       </section>
@@ -62,7 +59,6 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
           {/* Pavlovas */}
           <div className="group text-center flex flex-col items-center">
-            {/* Aspect-square garantiza círculo, overflow-hidden corta lo que sobra */}
             <div className="relative w-full aspect-square overflow-hidden rounded-full mb-6 border-[12px] border-[#EDB2D1] shadow-xl mx-auto bg-white">
               <Image 
                 src="/images/pavlovas-generated.jpg" 
@@ -128,7 +124,7 @@ export default function Home() {
             </div>
 
             <a 
-              href="https://www.google.com/maps/search/?api=1&query=11+de+Septiembre+1888,+2451,+Nuñez,+CABA" 
+              href="https://goo.gl/maps/tu-link-real-aqui" 
               target="_blank"
               rel="noopener noreferrer"
               className="mt-10 bg-[#2B4233] text-[#F6CDD7] px-8 py-4 rounded-full font-josefin font-bold uppercase tracking-widest hover:bg-[#5E7361] transition-colors self-start text-sm text-center shadow-lg"
@@ -146,7 +142,6 @@ export default function Home() {
                 className="object-cover group-hover:scale-105 transition-transform duration-700" 
               />
           </div>
-
         </div>
       </section>
 
@@ -159,7 +154,7 @@ export default function Home() {
         <div className="space-y-2 font-josefin text-sm tracking-wide">
           <p>11 de Septiembre 1888, N° 2451, Núñez, CABA</p>
           <p>Take Away & Envíos Personalizados</p>
-          <a href="https://wa.me/5491130302451" target="_blank" className="pt-4 text-[#EDB2D1] font-diner font-bold block hover:brightness-110">@tytapatisserie</a>
+          <Link href="/tienda" className="pt-4 text-[#EDB2D1] font-diner font-bold block hover:brightness-110">VISITAR TIENDA ONLINE</Link>
         </div>
         <div className="mt-16 pt-8 border-t border-white/10 text-[9px] tracking-widest uppercase opacity-30">
           © 2026 Tyta Patisserie | Excelencia y Calidad en cada bocado.

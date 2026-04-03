@@ -58,3 +58,39 @@ body {
   opacity: 0;
   animation: customFadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* --- ESTILOS BOUTIQUE GLOBALES --- */
+
+/* Forzar cursor 'manito' en todo lo que sea cliqueable */
+button, 
+[role="button"],
+.cursor-pointer,
+input[type="submit"],
+select,
+a {
+  cursor: pointer !important;
+}
+
+/* Vitrina de productos: que se entienda que las tarjetas abren el modal */
+.grid > div {
+  cursor: pointer;
+}
+
+/* Scrollbar Rosa Tyta (para que no aparezca la gris fea de Windows) */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #EDB2D1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2B4233;
+}
