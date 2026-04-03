@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import Link from "next/link";
 
 export default function AdminPedidosPage() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -10,13 +11,12 @@ export default function AdminPedidosPage() {
   useEffect(() => {
     fetchOrders();
 
-    // ✅ CORRECCIÓN: Bypass 'as any' para evitar el error de overload en el Build
     const channel = supabase
       .channel('orders_realtime')
       .on(
         'postgres_changes' as any, 
         { event: '*', table: 'orders' }, 
-        () => fetchOrders() // Envolvemos en función anónima para seguridad
+        () => fetchOrders()
       )
       .subscribe();
 
@@ -42,7 +42,6 @@ export default function AdminPedidosPage() {
       .eq('id', id);
 
     if (!error) {
-      // Actualización optimista para que Susana vea el cambio de color al instante
       setOrders(prev => prev.map(o => o.id === id ? { ...o, status: newStatus } : o));
     }
   }
@@ -62,6 +61,16 @@ export default function AdminPedidosPage() {
             <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-30 mt-2">
               Gestión de Comandas en Vivo
             </p>
+          </div>
+          
+          {/* BOTÓN VOLVER A ADMINISTRACIÓN */}
+          <div className="flex gap-3">
+            <Link 
+              href="/admin" 
+              className="px-5 py-2 border-2 border-[#2B4233] text-[#2B4233] rounded-full text-[9px] font-black uppercase tracking-widest hover:bg-[#2B4233] hover:text-white transition-all shadow-sm"
+            >
+              ⬅ VOLVER A GESTIÓN
+            </Link>
           </div>
         </header>
 

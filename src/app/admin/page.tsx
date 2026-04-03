@@ -9,7 +9,7 @@ export default function AdminPage() {
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [mounted, setMounted] = useState(false); // ✅ AHORA DESCOMENTADO
+  const [mounted, setMounted] = useState(false); 
   
   const [isAdding, setIsAdding] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any | null>(null);
@@ -17,7 +17,7 @@ export default function AdminPage() {
   const [newCatName, setNewCatName] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
-  // LOS 5 FILTROS
+  // FILTROS
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterStock, setFilterStock] = useState("all");
@@ -25,16 +25,13 @@ export default function AdminPage() {
   const [filterPhoto, setFilterPhoto] = useState("all");
   const [sortBy, setSortBy] = useState("name-asc"); 
 
-  // CONTROL DE INICIO Y REALTIME
   useEffect(() => {
     setMounted(true);
     fetchInitialData();
 
-    // Suscripción Realtime blindada para Vercel
     const channel = supabase
       .channel('orders_realtime')
       .on('postgres_changes' as any, { event: '*', table: 'orders' }, () => {
-        // En lugar de window.location.reload que es agresivo, refrescamos data
         fetchInitialData(); 
       })
       .subscribe();
@@ -44,7 +41,6 @@ export default function AdminPage() {
     };
   }, []);
 
-  // CONTROL DE ESCAPE Y SCROLL
   useEffect(() => {
     const isModalOpen = isAdding || editingProduct;
     document.body.style.overflow = isModalOpen ? "hidden" : "unset";
@@ -67,15 +63,9 @@ export default function AdminPage() {
     setLoading(false);
   }
 
-  const normalizeText = (text: string) => {
-    return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-  };
+  const normalizeText = (text: string) => text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+  const formatARS = (cents: number) => new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 0 }).format(cents / 100);
 
-  const formatARS = (cents: number) => {
-    return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 0 }).format(cents / 100);
-  };
-
-  // ACCIONES
   const handleSelectAll = (e: any) => {
     if (e.target.checked) setSelectedIds(filtered.map(p => p.id));
     else setSelectedIds([]);
@@ -109,7 +99,7 @@ export default function AdminPage() {
 
   async function handleDeleteCategory(name: string) {
     const { error } = await supabase.from('categories').delete().eq('name', name);
-    if (error) alert("⚠️ Categoría con productos vinculados. Movelos primero.");
+    if (error) alert("⚠️ Categoría con productos vinculados.");
     else fetchInitialData();
   }
 
@@ -131,15 +121,12 @@ export default function AdminPage() {
     const matchVis = filterVisible === "all" || (filterVisible === "visible" ? p.is_visible : !p.is_visible);
     const isOut = Number(p.stock) <= 0;
     const isCritical = !isOut && Number(p.stock) <= (p.critical_stock || 3);
-    
     let matchStock = true;
     if (filterStock === "in-stock") matchStock = !isOut;
     if (filterStock === "critical") matchStock = isCritical;
     if (filterStock === "out-of-stock") matchStock = isOut;
-    
     const hasPhoto = p.image_url && p.image_url.trim().length > 10;
     const matchPhoto = filterPhoto === "all" || (filterPhoto === "with" ? hasPhoto : !hasPhoto);
-
     return matchSearch && matchCat && matchStock && matchVis && matchPhoto;
   }).sort((a, b) => {
     if (sortBy === "price-asc") return a.price - b.price;
@@ -150,7 +137,7 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] p-4 sm:p-8 font-josefin text-[#2B4233]">
-      {/* HEADER */}
+      {/* HEADER DINÁMICO */}
       <header className="max-w-[1400px] mx-auto mb-6 flex flex-wrap justify-between items-end bg-white p-6 rounded-[2.5rem] shadow-sm border border-[#EDB2D1]/10 gap-4">
         <div>
           <h1 className="text-5xl font-diner uppercase leading-none mb-3">Gestión Tyta</h1>
@@ -160,7 +147,11 @@ export default function AdminPage() {
         </div>
         <div className="flex flex-col items-end gap-2">
           <div className="flex gap-2">
+            {/* BOTÓN DESPACHO AGREGADO */}
+            <Link href="/admin/pedidos" className="px-5 py-2 border-2 border-[#EDB2D1] text-[#EDB2D1] rounded-full text-[9px] font-black uppercase tracking-widest hover:bg-[#EDB2D1] hover:text-white transition-all">📋 DESPACHO</Link>
+            
             <Link href="/tienda" className="px-5 py-2 border-2 border-[#2B4233] rounded-full text-[9px] font-black uppercase hover:bg-[#2B4233] hover:text-white transition-all">TIENDA</Link>
+            
             <button onClick={() => { setNewProduct({ name: "", price: 0, cost: 0, category: categories[0]?.name || "", image_url: "", description: "", stock: 0, critical_stock: 3, is_visible: true }); setIsAdding(true); }} className="px-5 py-2 bg-[#2B4233] text-white rounded-full text-[9px] font-black uppercase tracking-widest">+ NUEVO</button>
           </div>
           <span className="text-[10px] font-black uppercase opacity-50 bg-[#FDFBF7] px-3 py-1 rounded-full">Mostrando {filtered.length} de {products.length}</span>
@@ -186,7 +177,7 @@ export default function AdminPage() {
         </div>
       )}
 
-      {/* LOS 5 FILTROS */}
+      {/* TABLA Y FILTROS (Resto del código igual) */}
       <div className="max-w-[1400px] mx-auto mb-6 bg-white p-4 rounded-[2rem] shadow-sm border border-[#EDB2D1]/20">
         <div className="flex flex-wrap gap-2 items-center">
           <input type="text" placeholder="Buscar..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="flex-1 min-w-[150px] px-5 py-3 bg-[#FDFBF7] border border-[#EDB2D1]/20 rounded-xl outline-none font-bold text-sm shadow-inner" />
@@ -223,7 +214,6 @@ export default function AdminPage() {
         </div>
       </div>
 
-      {/* TABLA */}
       <div className="max-w-[1400px] mx-auto bg-white rounded-[2.5rem] shadow-xl border border-[#EDB2D1]/10 overflow-x-auto">
         <table className="w-full text-left min-w-[1100px]">
           <thead className="bg-[#FDFBF7] text-[9px] font-black uppercase opacity-40 border-b border-[#EDB2D1]/10">
@@ -270,15 +260,14 @@ export default function AdminPage() {
         </table>
       </div>
 
-      {/* MODAL ESPEJO BLINDADO */}
+      {/* MODAL GESTIÓN */}
       {(isAdding || editingProduct) && (
         <div className="fixed inset-0 z-[100] flex justify-end">
-          <div className="absolute inset-0 bg-[#2B4233]/40 backdrop-blur-sm" />
+          <div className="absolute inset-0 bg-[#2B4233]/40 backdrop-blur-sm" onClick={() => { setIsAdding(false); setEditingProduct(null); }} />
           <div className="relative w-full max-w-xs bg-white shadow-2xl border-l-8 border-[#EDB2D1] flex flex-col h-full overflow-hidden">
             <div className="p-6 pb-2">
               <h2 className="text-4xl font-diner uppercase text-[#2B4233]">{editingProduct ? 'Editar' : 'Nuevo'}</h2>
             </div>
-
             <div className="flex-1 overflow-y-auto px-6 py-2 space-y-4 custom-scrollbar">
               <div className="flex flex-col items-center p-4 border-2 border-dashed border-[#EDB2D1]/20 rounded-[2rem] bg-[#FDFBF7]">
                 <img alt="Tyta Patisserie" src={editingProduct?.image_url || newProduct.image_url || "/images/placeholder.jpg"} className="w-20 h-20 rounded-xl object-cover mb-2 border-2 border-white shadow-md" />
@@ -293,12 +282,10 @@ export default function AdminPage() {
                   {({ open }) => ( <button type="button" onClick={() => open()} className="px-4 py-1.5 bg-[#2B4233] text-[#EDB2D1] rounded-full text-[8px] font-black uppercase tracking-widest shadow-sm">📸 Subir</button> )}
                 </CldUploadWidget>
               </div>
-
               <div className="space-y-1">
                 <label className="text-[8px] font-black uppercase text-gray-400">Nombre</label>
                 <input type="text" value={editingProduct ? editingProduct.name : newProduct.name} onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, name: e.target.value}) : setNewProduct({...newProduct, name: e.target.value})} className="w-full p-3 bg-[#FDFBF7] border border-gray-100 rounded-xl font-bold text-xs outline-none" required />
               </div>
-
               <div className="space-y-1">
                 <label className="text-[8px] font-black uppercase text-gray-400">Categoría</label>
                 <select value={editingProduct ? editingProduct.category : newProduct.category} onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, category: e.target.value}) : setNewProduct({...newProduct, category: e.target.value})} className="w-full p-3 bg-[#FDFBF7] border border-gray-100 rounded-xl font-bold text-xs cursor-pointer" required>
@@ -306,18 +293,10 @@ export default function AdminPage() {
                   {categories.map(cat => <option key={cat.id} value={cat.name}>{cat.name}</option>)}
                 </select>
               </div>
-
               <div className="space-y-1">
-                <label className="text-[8px] font-black uppercase text-gray-400">Descripción Boutique</label>
-                <textarea 
-                  rows={3} 
-                  value={editingProduct ? editingProduct.description : newProduct.description} 
-                  onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, description: e.target.value}) : setNewProduct({...newProduct, description: e.target.value})} 
-                  placeholder="Contá de qué se trata..."
-                  className="w-full p-3 bg-[#FDFBF7] border border-gray-100 rounded-xl font-bold text-xs outline-none resize-none"
-                />
+                <label className="text-[8px] font-black uppercase text-gray-400">Descripción</label>
+                <textarea rows={3} value={editingProduct ? editingProduct.description : newProduct.description} onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, description: e.target.value}) : setNewProduct({...newProduct, description: e.target.value})} placeholder="Contá de qué se trata..." className="w-full p-3 bg-[#FDFBF7] border border-gray-100 rounded-xl font-bold text-xs outline-none resize-none" />
               </div>
-
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
                   <label className="text-[8px] font-black uppercase text-gray-400">Stock Actual</label>
@@ -328,7 +307,6 @@ export default function AdminPage() {
                   <input type="number" value={editingProduct ? (editingProduct.critical_stock ?? "") : (newProduct.critical_stock ?? "")} onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, critical_stock: e.target.value}) : setNewProduct({...newProduct, critical_stock: e.target.value})} className="w-full p-3 bg-[#FDFBF7] border-2 border-[#EDB2D1]/20 rounded-xl font-bold text-center text-[#EDB2D1] text-xs" />
                 </div>
               </div>
-
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
                   <label className="text-[8px] font-black uppercase text-gray-400">Costo (Cts)</label>
@@ -340,7 +318,6 @@ export default function AdminPage() {
                 </div>
               </div>
             </div>
-
             <div className="p-6 pt-4 bg-white border-t border-gray-50 flex flex-col gap-2">
               <button type="submit" onClick={handleSaveProduct} className="w-full py-4 bg-[#EDB2D1] text-white rounded-full font-black uppercase tracking-widest text-[10px] shadow-lg hover:bg-[#2B4233] transition-all">Guardar</button>
               <button type="button" onClick={() => { setIsAdding(false); setEditingProduct(null); }} className="w-full py-2 text-gray-300 font-bold uppercase text-[8px] tracking-widest hover:text-red-500 transition-colors cursor-pointer text-center">Cancelar (Esc)</button>
