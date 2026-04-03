@@ -9,21 +9,40 @@ export default function AdminPedidosPage() {
 
   useEffect(() => {
     fetchOrders();
-    const channel = supabase.channel('orders_realtime').on('postgres_changes', 
-      { event: '*', table: 'orders' }, fetchOrders).subscribe();
-    return () => { supabase.removeChannel(channel); };
+
+    // ✅ CORRECCIÓN: Bypass 'as any' para evitar el error de overload en el Build
+    const channel = supabase
+      .channel('orders_realtime')
+      .on(
+        'postgres_changes' as any, 
+        { event: '*', table: 'orders' }, 
+        () => fetchOrders() // Envolvemos en función anónima para seguridad
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   async function fetchOrders() {
-    const { data } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
+    const { data } = await supabase
+      .from('orders')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
     if (data) setOrders(data);
     setLoading(false);
   }
 
   async function updateStatus(id: string, newStatus: string) {
-    const { error } = await supabase.from('orders').update({ status: newStatus }).eq('id', id);
+    const { error } = await supabase
+      .from('orders')
+      .update({ status: newStatus })
+      .eq('id', id);
+
     if (!error) {
-      // Actualización optimista para que Susana lo vea al instante
+      // Actualización optimista para que Susana vea el cambio de color al instante
       setOrders(prev => prev.map(o => o.id === id ? { ...o, status: newStatus } : o));
     }
   }
@@ -40,7 +59,9 @@ export default function AdminPedidosPage() {
         <header className="mb-10 border-b border-[#EDB2D1]/20 pb-6 flex justify-between items-end">
           <div>
             <h1 className="text-6xl font-diner uppercase leading-none">Despacho Tyta</h1>
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-30 mt-2">Gestión de Comandas en Vivo</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-30 mt-2">
+              Gestión de Comandas en Vivo
+            </p>
           </div>
         </header>
 
@@ -49,7 +70,9 @@ export default function AdminPedidosPage() {
             <div key={order.id} className="bg-white rounded-[2.5rem] shadow-xl border border-[#EDB2D1]/10 flex flex-col overflow-hidden group">
               <div className="p-8 border-b border-[#FDFBF7]">
                 <div className="flex justify-between items-start mb-4">
-                  <span className="text-[10px] font-black opacity-30 uppercase">Ref: {order.id}</span>
+                  <span className="text-[10px] font-black opacity-30 uppercase tracking-tighter text-gray-400">
+                    Ref: {order.id}
+                  </span>
                   <div className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${
                     order.status === 'pagado' ? 'bg-[#2B4233] text-white' : 
                     order.status === 'entregado' ? 'bg-[#EDB2D1] text-[#2B4233]' : 'bg-gray-100 text-gray-400'
@@ -58,13 +81,17 @@ export default function AdminPedidosPage() {
                   </div>
                 </div>
                 <h3 className="text-xl font-bold mb-1">{order.customer_name}</h3>
-                <p className="text-[10px] opacity-40 font-mono italic">{new Date(order.created_at).toLocaleString()}</p>
+                <p className="text-[10px] opacity-40 font-mono italic">
+                  {new Date(order.created_at).toLocaleString('es-AR')}
+                </p>
               </div>
 
               <div className="p-8 flex-1 space-y-3">
                 {order.items?.map((item: any, i: number) => (
                   <div key={i} className="flex justify-between text-sm italic">
-                    <span>{item.name} <span className="text-[10px] font-black opacity-20">x{item.quantity}</span></span>
+                    <span className="font-medium">
+                      {item.name} <span className="text-[10px] font-black opacity-20 not-italic ml-1">x{item.quantity}</span>
+                    </span>
                   </div>
                 ))}
               </div>
@@ -72,18 +99,20 @@ export default function AdminPedidosPage() {
               <div className="p-8 bg-[#FDFBF7]/50 border-t border-[#EDB2D1]/5 space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-[10px] font-black uppercase opacity-30">Total</span>
-                  <span className="text-2xl font-black font-mono">${(order.total / 100).toLocaleString()}</span>
+                  <span className="text-2xl font-black font-mono tracking-tighter">
+                    ${(order.total / 100).toLocaleString('es-AR')}
+                  </span>
                 </div>
                 <div className="flex flex-col gap-2">
                   <button 
                     onClick={() => updateStatus(order.id, 'pagado')}
-                    className="w-full py-3 bg-[#2B4233] text-white rounded-2xl text-[9px] font-black uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all"
+                    className="w-full py-3 bg-[#2B4233] text-white rounded-2xl text-[9px] font-black uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all shadow-md"
                   >
                     Marcar Pagado
                   </button>
                   <button 
                     onClick={() => updateStatus(order.id, 'entregado')}
-                    className="w-full py-3 bg-[#EDB2D1] text-[#2B4233] rounded-2xl text-[9px] font-black uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all"
+                    className="w-full py-3 bg-[#EDB2D1] text-[#2B4233] rounded-2xl text-[9px] font-black uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all shadow-sm"
                   >
                     Entregado
                   </button>
