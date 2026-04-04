@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link"; // Importamos Link para la navegación interna
+import Link from "next/link";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
@@ -22,11 +23,9 @@ export default function Home() {
             Excelencia y Calidad
           </h2>
           
-          {/* BOTONES HERO ACTUALIZADOS */}
           <div className="flex flex-col md:flex-row gap-6 justify-center items-center mt-4">
-            {/* Botón Principal: WhatsApp */}
             <a 
-              href="https://wa.me/5491130302451" 
+              href="https://wa.me/5491132125647" 
               target="_blank"
               rel="noopener noreferrer"
               className="bg-white text-[#2B4233] px-10 py-5 rounded-full font-josefin font-bold uppercase tracking-widest hover:scale-105 transition-all shadow-2xl inline-block text-center border-2 border-white"
@@ -34,7 +33,6 @@ export default function Home() {
               Pedir por WhatsApp
             </a>
 
-            {/* Botón E-commerce: ¡HABILITADO! */}
             <Link 
               href="/tienda" 
               className="bg-[#EDB2D1] text-[#2B4233] px-10 py-5 rounded-full font-josefin font-bold uppercase tracking-widest hover:scale-105 transition-all shadow-2xl inline-block text-center border-2 border-[#EDB2D1]"
@@ -48,9 +46,6 @@ export default function Home() {
       {/* 2. SECCIÓN ESPECIALIDADES */}
       <section className="py-24 px-6 max-w-7xl mx-auto bg-white">
         <div className="text-center mb-20 relative">
-          <div className="absolute top-0 right-0 font-josefin text-xs uppercase tracking-[0.5em] text-[#5E7361] -mt-12">
-            ARTESANÍA EN CADA DETALLE
-          </div>
           <h3 className="text-[#2B4233] text-5xl font-mermaid mb-4 italic">Nuestras Especialidades</h3>
           <div className="w-24 h-1 bg-[#EDB2D1] mx-auto mb-6"></div>
           <p className="text-[#5E7361] font-josefin uppercase tracking-[0.3em] text-xs">Artesanía en cada detalle</p>
@@ -64,14 +59,10 @@ export default function Home() {
                 src="/images/pavlovas-generated.jpg" 
                 alt="Pavlovas Tyta" 
                 fill
-                sizes="(max-width: 768px) 100vw, 400px"
                 className="object-cover scale-[2.2] group-hover:scale-[2.35] transition-transform duration-700" 
               />
             </div>
             <h4 className="font-diner text-[#2B4233] text-4xl mb-2">Pavlovas</h4>
-            <p className="font-josefin text-[#5E7361] italic text-lg leading-tight">
-              <span className="text-xl">"</span>Crujientes por fuera, nubes por dentro<span className="text-xl">"</span>
-            </p>
           </div>
 
           {/* Macarrons */}
@@ -98,68 +89,27 @@ export default function Home() {
               />
             </div>
             <h4 className="font-diner text-[#2B4233] text-4xl mb-2">Cajas de Felicidad</h4>
-            <p className="font-josefin text-[#5E7361] text-xs uppercase tracking-widest">PERFECTAS PARA REGALAR MOMENTOS</p>
           </div>
         </div>
       </section>
 
-      {/* 3. SECCIÓN: TAKE AWAY / LOCAL */}
+      {/* 3. TAKE AWAY */}
       <section className="bg-[#F6CDD7] py-24 px-6">
         <div className="max-w-6xl mx-auto bg-white rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row">
-          
           <div className="md:w-1/2 p-12 md:p-16 flex flex-col justify-center">
-            <h3 className="text-[#5E7361] text-sm font-josefin uppercase tracking-[0.4em] mb-4">Visitanos</h3>
             <h4 className="text-[#2B4233] text-6xl font-mermaid italic mb-6">Take Away</h4>
-            <p className="text-[#5E7361] font-josefin text-lg mb-8 leading-relaxed">
-              Vení a conocer nuestro espacio en el corazón de Núñez. Llevate tus especialidades favoritas recién horneadas, listas para disfrutar o regalar.
-            </p>
-            
             <div className="space-y-4 font-josefin text-[#2B4233] font-bold">
-              <p className="flex items-center gap-4">
-                <span className="text-2xl">📍</span> 11 de Septiembre 1888, N° 2451, Núñez, CABA
-              </p>
-              <p className="flex items-center gap-4">
-                <span className="text-2xl">🕒</span> Todos los días - 08:00 a 20:00 hs
-              </p>
+              <p>📍 11 de Septiembre 1888, N° 2451, Núñez, CABA</p>
+              <p>🕒 Todos los días - 08:00 a 20:00 hs</p>
             </div>
-
-            <a 
-              href="https://goo.gl/maps/tu-link-real-aqui" 
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-10 bg-[#2B4233] text-[#F6CDD7] px-8 py-4 rounded-full font-josefin font-bold uppercase tracking-widest hover:bg-[#5E7361] transition-colors self-start text-sm text-center shadow-lg"
-            >
-              Cómo llegar
-            </a>
           </div>
-
-          <div className="md:w-1/2 bg-[#EDB2D1] min-h-[400px] relative group overflow-hidden">
-             <Image 
-                src="/images/local.jpg" 
-                alt="Vitrina de especialidades Tyta Patisserie" 
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw" 
-                className="object-cover group-hover:scale-105 transition-transform duration-700" 
-              />
+          <div className="md:w-1/2 min-h-[400px] relative">
+            <Image src="/images/local.jpg" alt="Local Tyta" fill className="object-cover" />
           </div>
         </div>
       </section>
 
-      {/* 4. FOOTER */}
-      <footer className="bg-[#2B4233] text-[#F6CDD7] py-20 px-6 text-center">
-        <div className="mb-10">
-          <p className="font-diner text-5xl tracking-[0.2em] mb-2 text-[#F6CDD7]">TYTA Pastelería</p>
-          <p className="font-josefin text-[10px] tracking-[0.6em] uppercase opacity-50">Pastelería Boutique</p>
-        </div>
-        <div className="space-y-2 font-josefin text-sm tracking-wide">
-          <p>11 de Septiembre 1888, N° 2451, Núñez, CABA</p>
-          <p>Take Away & Envíos Personalizados</p>
-          <Link href="/tienda" className="pt-4 text-[#EDB2D1] font-diner font-bold block hover:brightness-110">VISITAR TIENDA ONLINE</Link>
-        </div>
-        <div className="mt-16 pt-8 border-t border-white/10 text-[9px] tracking-widest uppercase opacity-30">
-          © 2026 Tyta Patisserie | Excelencia y Calidad en cada bocado.
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }

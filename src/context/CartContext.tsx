@@ -1,10 +1,14 @@
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import { Product } from "@/data/products";
 
-export interface CartItem extends Product {
+export interface CartItem {
+  id: string;
+  name: string;
+  price: number;
   quantity: number;
+  image_url?: string;
+  image?: string;
 }
 
 interface CartContextType {
@@ -13,14 +17,12 @@ interface CartContextType {
   openCart: () => void;
   closeCart: () => void;
   clearCart: () => void;
-  addToCart: (product: Product, quantity?: number) => void; // Ahora acepta cantidad
+  addToCart: (product: any, quantity?: number) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   cartTotal: number;
-  cartCount: number;
-  // --- NUEVOS ESTADOS PARA EL TOAST ---
   toast: { message: string; visible: boolean };
-  showToast: (message: string) => void;
+  cartFlash: boolean; // <--- AGREGADO: Declaración del tipo
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -28,29 +30,23 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  
-  // Estado inicial del Toast
   const [toast, setToast] = useState({ message: "", visible: false });
+  const [cartFlash, setCartFlash] = useState(false); // <--- AGREGADO: Estado real
 
   const openCart = () => setIsCartOpen(true);
   const closeCart = () => setIsCartOpen(false);
-  const clearCart = () => {
-  setCart([]);
-  showToast("Carrito vaciado 🗑️"); // Un mimo visual ya que tenemos los toasts
-  closeCart();
-  };
+  const clearCart = () => { setCart([]); closeCart(); };
 
-  // Función para disparar la notificación
   const showToast = (message: string) => {
     setToast({ message, visible: true });
-    // Magia: se oculta solo a los 3 segundos
-    setTimeout(() => {
-      setToast((prev) => ({ ...prev, visible: false }));
-    }, 3000);
+    setTimeout(() => setToast({ message: "", visible: false }), 3000);
   };
 
-  // Optimizamos addToCart para que sume cantidades de una y no abra el panel
-  const addToCart = (product: Product, quantity: number = 1) => {
+  const addToCart = (product: any, quantity: number = 1) => {
+    // ACTIVAR FLASH
+    setCartFlash(true);
+    setTimeout(() => setCartFlash(false), 1000);
+
     setCart((prevCart) => {
       const existingItem = prevCart.find((item) => item.id === product.id);
       if (existingItem) {
@@ -58,46 +54,36 @@ export function CartProvider({ children }: { children: ReactNode }) {
           item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item
         );
       }
-      return [...prevCart, { ...product, quantity }];
+      return [...prevCart, { 
+        id: product.id, 
+        name: product.name, 
+        price: product.price, 
+        image_url: product.image_url || product.image,
+        quantity 
+      }];
     });
-    
-    // Mostramos la notificación sutil en lugar de invadir la pantalla
-    showToast(`¡${product.name} agregado a tu pedido! 🍰`);
+    showToast(`¡${product.name} agregado! 🍰`);
+  };
+
+  const updateQuantity = (productId: string, quantity: number) => {
+    if (quantity < 1) return removeFromCart(productId);
+    setCart((prevCart) =>
+      prevCart.map((item) => (item.id === productId ? { ...item, quantity } : item))
+    );
   };
 
   const removeFromCart = (productId: string) => {
     setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
   };
 
-  const updateQuantity = (productId: string, quantity: number) => {
-    if (quantity < 1) return removeFromCart(productId);
-    setCart((prevCart) =>
-      prevCart.map((item) =>
-        item.id === productId ? { ...item, quantity } : item
-      )
-    );
-  };
-
   const cartTotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
-  const cartCount = cart.reduce((count, item) => count + item.quantity, 0);
 
   return (
-    <CartContext.Provider
-      value={{
-        cart,
-        isCartOpen,
-        openCart,
-        closeCart,
-        clearCart,
-        addToCart,
-        removeFromCart,
-        updateQuantity,
-        cartTotal,
-        cartCount,
-        toast,
-        showToast,
-      }}
-    >
+    <CartContext.Provider value={{ 
+      cart, isCartOpen, openCart, closeCart, clearCart, 
+      addToCart, removeFromCart, updateQuantity, cartTotal, toast,
+      cartFlash // <--- AGREGADO: Exportación al Provider
+    }}>
       {children}
     </CartContext.Provider>
   );
@@ -105,8 +91,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
 export function useCart() {
   const context = useContext(CartContext);
-  if (context === undefined) {
-    throw new Error("useCart debe usarse dentro de un CartProvider");
-  }
+  if (context === undefined) throw new Error("useCart debe usarse dentro de un CartProvider");
   return context;
 }
