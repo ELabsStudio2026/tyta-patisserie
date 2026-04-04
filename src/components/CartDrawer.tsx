@@ -28,8 +28,12 @@ export default function CartDrawer() {
     }
 
     const ref = Math.random().toString(36).toUpperCase().substring(2, 7);
+    const totalStr = (cartTotal / 100).toLocaleString('es-AR', { 
+      style: 'currency', currency: 'ARS', minimumFractionDigits: 0 
+    });
 
     try {
+      // 1. REGISTRO EN SUPABASE
       const { error } = await supabase.from('orders').insert([{
         id: ref,
         customer_name: customerData.name,
@@ -42,35 +46,38 @@ export default function CartDrawer() {
 
       if (error) throw error;
 
-      // --- LÓGICA DE MENSAJE CORREGIDA PARA SUSANA ---
-      const detalle = cart.map(i => `* ${i.name} (x${i.quantity})`).join('\n');
-      const totalF = (cartTotal / 100).toLocaleString('es-AR');
+      // 2. CONFIGURACIÓN DEL MENSAJE (Concatenación segura para evitar errores de encoding)
+      const detail = cart.map(item => `• ${item.name} (x${item.quantity})`).join('\n');
       const deliveryIcon = customerData.delivery_type === 'Envio' ? "🛵" : "🏪";
       
-      const message = `🧁 Tyta Patisserie • Nuevo Pedido
-────────────────────
-Cliente: ${customerData.name}
-Ref: ${ref}
+      const message = 
+        "🧁 *Tyta Patisserie • Nuevo Pedido*\n" +
+        "────────────────────\n" +
+        "*Cliente:* " + customerData.name + "\n" +
+        "*Ref:* `" + ref + "`\n\n" +
+        "*Detalle del pedido:*\n" +
+        detail + "\n\n" +
+        "💰 *Total:* *" + totalStr + "*\n" +
+        deliveryIcon + " *Modo:* " + customerData.delivery_type + "\n" +
+        "────────────────────\n" +
+        "🔗 *Seguí tu pedido en vivo aquí:*\n" +
+        "https://tytapatisserie.com.ar/pedido/" + ref + "\n\n" +
+        "_Hola Susana, ¿me confirmás disponibilidad para coordinar el pago?_";
 
-Detalle del pedido:
-${detalle}
-
-💰 Total: $ ${totalF}
-${deliveryIcon} Modo: ${customerData.delivery_type}
-────────────────────
-🔗 Seguí tu pedido en vivo aquí:
-https://tytapatisserie.com.ar/pedido/${ref}
-
-Hola Susana, ¿me confirmás disponibilidad para coordinar el pago?`;
-
-      // Usamos encodeURIComponent para proteger emojis y saltos de línea
-      window.open(`https://wa.me/5491130302451?text=${encodeURIComponent(message)}`, '_blank');
+      // 3. CODIFICACIÓN SEGURA PARA ANDROID/iOS
+      // Usamos la URL de api.whatsapp.com que es la más compatible
+      const whatsappUrl = `https://api.whatsapp.com/send?phone=5491130302451&text=${encodeURIComponent(message)}`;
       
+      window.location.href = whatsappUrl;
+      
+      // 4. RESET DE ESTADOS
       clearCart();
       setStep('cart');
       closeCart();
+
     } catch (err) {
-      alert("Error al guardar el pedido.");
+      console.error("Error:", err);
+      alert("Hubo un detalle al procesar el pedido. Por favor, reintentá.");
     }
   };
 
@@ -80,7 +87,7 @@ Hola Susana, ¿me confirmás disponibilidad para coordinar el pago?`;
       
       <div className="relative w-full max-w-md bg-[#FDFBF7] h-full shadow-2xl flex flex-col overflow-hidden">
         
-        {/* HEADER COMPACTO */}
+        {/* HEADER */}
         <div className="p-6 border-b border-[#EDB2D1]/10 bg-white flex justify-between items-end flex-none">
           <h2 className="font-diner text-4xl text-[#2B4233] uppercase leading-none tracking-tighter">
             {step === 'cart' && "Pedido"}
@@ -92,10 +99,9 @@ Hola Susana, ¿me confirmás disponibilidad para coordinar el pago?`;
           )}
         </div>
 
-        {/* CUERPO CENTRAL */}
+        {/* CUERPO */}
         <div className="flex-1 relative flex flex-col overflow-hidden">
           
-          {/* PASO 1: CARRITO */}
           {step === 'cart' && (
             <div className="flex-1 overflow-y-auto p-8 space-y-6">
               {cart.map((item) => (
@@ -104,7 +110,7 @@ Hola Susana, ¿me confirmás disponibilidad para coordinar el pago?`;
                     <img src={item.image_url || '/images/placeholder.jpg'} className="w-full h-full object-cover" />
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-bold text-[10px] uppercase tracking-wider text-[#2B4233] leading-tight">{item.name}</h4>
+                    <h4 className="font-bold text-[10px] uppercase tracking-wider text-[#2B4233]">{item.name}</h4>
                     <div className="flex items-center gap-3 mt-2 bg-white px-2 py-1 rounded-full border border-gray-100 shadow-sm w-fit">
                       <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="text-[#EDB2D1] font-bold text-xs px-1">-</button>
                       <span className="text-[10px] font-black w-3 text-center">{item.quantity}</span>
@@ -118,7 +124,6 @@ Hola Susana, ¿me confirmás disponibilidad para coordinar el pago?`;
             </div>
           )}
 
-          {/* PASO 2: AVISO */}
           {step === 'confirm' && (
             <div className="flex-1 flex flex-col justify-center items-center p-10 text-center animate-in fade-in zoom-in-95">
               <div className="space-y-8 max-w-[300px]">
@@ -134,11 +139,10 @@ Hola Susana, ¿me confirmás disponibilidad para coordinar el pago?`;
             </div>
           )}
 
-          {/* PASO 3: FORMULARIO */}
           {step === 'form' && (
             <div className="p-8 space-y-6 animate-in slide-in-from-right-4 overflow-y-auto flex-1">
               <div className="space-y-1">
-                <label className="text-[8px] font-black uppercase opacity-30 tracking-[0.3em] ml-2">Nombre y Apellido completos</label>
+                <label className="text-[8px] font-black uppercase opacity-30 tracking-[0.3em] ml-2">Nombre y Apellido</label>
                 <input type="text" className="w-full bg-white border-b border-gray-100 p-4 outline-none focus:border-[#EDB2D1] italic text-sm"
                   onChange={(e) => setCustomerData({...customerData, name: e.target.value})} />
               </div>
