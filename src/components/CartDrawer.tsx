@@ -42,11 +42,28 @@ export default function CartDrawer() {
 
       if (error) throw error;
 
-      const detalle = cart.map(i => `• ${i.name} (x${i.quantity})`).join('\n');
+      // --- LÓGICA DE MENSAJE CORREGIDA PARA SUSANA ---
+      const detalle = cart.map(i => `* ${i.name} (x${i.quantity})`).join('\n');
       const totalF = (cartTotal / 100).toLocaleString('es-AR');
+      const deliveryIcon = customerData.delivery_type === 'Envio' ? "🛵" : "🏪";
       
-      const message = `🧁 *Tyta Patisserie • Nuevo Pedido*\n────────────────────\n*Ref:* ${ref}\n*Cliente:* ${customerData.name}\n\n*Detalle:*\n${detalle}\n\n💰 *Total: $ ${totalF}*\n*Modo:* ${customerData.delivery_type}\n────────────────────\n🔗 *Ticket:* https://tyta-patisserie.vercel.app/pedido/${ref}`;
+      const message = `🧁 Tyta Patisserie • Nuevo Pedido
+────────────────────
+Cliente: ${customerData.name}
+Ref: ${ref}
 
+Detalle del pedido:
+${detalle}
+
+💰 Total: $ ${totalF}
+${deliveryIcon} Modo: ${customerData.delivery_type}
+────────────────────
+🔗 Seguí tu pedido en vivo aquí:
+https://tytapatisserie.com.ar/pedido/${ref}
+
+Hola Susana, ¿me confirmás disponibilidad para coordinar el pago?`;
+
+      // Usamos encodeURIComponent para proteger emojis y saltos de línea
       window.open(`https://wa.me/5491130302451?text=${encodeURIComponent(message)}`, '_blank');
       
       clearCart();
@@ -59,7 +76,7 @@ export default function CartDrawer() {
 
   return (
     <div className="fixed inset-0 z-[700] flex justify-end">
-      <div className="absolute inset-0 bg-[#2B4233]/40 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-[#2B4233]/40 backdrop-blur-sm" onClick={handleClose} />
       
       <div className="relative w-full max-w-md bg-[#FDFBF7] h-full shadow-2xl flex flex-col overflow-hidden">
         
@@ -101,7 +118,7 @@ export default function CartDrawer() {
             </div>
           )}
 
-          {/* PASO 2: AVISO (FRASE +50% Y BOTONES -1/3) */}
+          {/* PASO 2: AVISO */}
           {step === 'confirm' && (
             <div className="flex-1 flex flex-col justify-center items-center p-10 text-center animate-in fade-in zoom-in-95">
               <div className="space-y-8 max-w-[300px]">
@@ -109,7 +126,6 @@ export default function CartDrawer() {
                 <p className="text-[#2B4233] text-[18px] font-medium italic opacity-80 leading-snug">
                   Para emitir tu ticket oficial y coordinar la entrega, requerimos tu Nombre y Apellido completos, N° de Teléfono y método de entrega. ¿Deseas continuar?
                 </p>
-                {/* BOTONES REDUCIDOS EN ALTURA (py-2.5) */}
                 <div className="grid grid-cols-2 gap-3 pt-4">
                   <button onClick={() => setStep('form')} className="w-full py-2.5 bg-[#2B4233] text-[#EDB2D1] rounded-full font-black uppercase text-[10px] tracking-[0.4em] shadow-xl"> SI </button>
                   <button onClick={() => setStep('cart')} className="w-full py-2.5 border border-[#2B4233]/10 text-[#2B4233] rounded-full font-black uppercase text-[10px] tracking-[0.4em]"> NO </button>

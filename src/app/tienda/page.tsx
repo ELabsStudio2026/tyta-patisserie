@@ -16,7 +16,6 @@ export default function TiendaPage() {
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("Todas");
   
-  // Traemos el carrito real del Contexto
   const { cart, addToCart, openCart, cartFlash } = useCart();
 
   const [isMounted, setIsMounted] = useState(false);
@@ -25,7 +24,6 @@ export default function TiendaPage() {
   const [showTopButton, setShowTopButton] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
 
-  // CLAVE: Calculamos el total de items sumando las cantidades
   const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   useEffect(() => {
@@ -63,7 +61,6 @@ export default function TiendaPage() {
   return (
     <div className="flex flex-col h-screen bg-[#FDFBF7] text-[#2B4233] font-josefin overflow-hidden relative">
       
-      {/* Pasamos el cartCount calculado aquí */}
       <FloatingActions 
         showMarketing={showMarketingPopup}
         onOpenMarketing={() => setShowMarketingPopup(true)}
@@ -92,22 +89,51 @@ export default function TiendaPage() {
 
       <CartDrawer />
 
-      <header className="flex-none h-[30vh] flex flex-col justify-center bg-[#FDFBF7] border-b border-[#EDB2D1]/20 px-4 text-center z-20">
-        <h1 className="text-4xl md:text-7xl font-diner uppercase leading-none">Tyta Patisserie</h1>
-        <p className="text-[8px] font-black uppercase tracking-[0.4em] opacity-40 mt-2">Pastelería de Autor</p>
-        <nav className="max-w-[1200px] mx-auto w-full flex flex-wrap justify-center gap-2 mt-4">
+      {/* HEADER: DISEÑO PROLIJO Y COMPACTO (30% ALTURA) */}
+      <header className="flex-none h-[30vh] flex flex-col justify-between bg-[#5E7361] px-4 py-6 text-center z-20 shadow-md">
+        
+        {/* Marca centrada verticalmente en el espacio superior */}
+        <div className="flex-1 flex flex-col justify-center">
+          <h1 className="text-3xl md:text-6xl font-diner uppercase leading-none text-white tracking-tight">
+            Tyta Patisserie
+          </h1>
+          <p className="text-[9px] md:text-[12px] font-josefin tracking-[0.5em] uppercase mt-2 text-white/80">
+            by Su Fernandez
+          </p>
+        </div>
+
+        {/* Filtros: Siempre dentro del bloque verde al pie del 30% */}
+        <nav className="w-full flex flex-wrap justify-center gap-1.5 pb-2">
           {categories.map((cat) => (
-            <button key={cat.id} onClick={() => setActiveCategory(cat.name)} className={`px-4 py-1.5 rounded-full text-[8px] font-black uppercase transition-all border ${activeCategory === cat.name ? 'bg-[#2B4233] text-white border-[#2B4233]' : 'bg-white text-[#2B4233]/40 border-[#EDB2D1]/10'}`}>{cat.name}</button>
+            <button 
+              key={cat.id} 
+              onClick={() => setActiveCategory(cat.name)} 
+              className={`px-3 py-1.5 rounded-full text-[8px] font-black uppercase transition-all shadow-sm ${
+                activeCategory === cat.name 
+                  ? 'bg-[#EDB2D1] text-[#2B4233] scale-105' 
+                  : 'bg-white text-[#2B4233] hover:bg-gray-100'
+              }`}
+            >
+              {cat.name}
+            </button>
           ))}
         </nav>
       </header>
 
-      <main id="scroll-area" className="flex-1 overflow-y-auto custom-scrollbar bg-white/40 px-4 py-8 relative scroll-smooth">
+      {/* CUERPO PRINCIPAL: 100% LIBRE */}
+      <main id="scroll-area" className="flex-1 overflow-y-auto custom-scrollbar bg-white px-4 py-8 relative scroll-smooth">
         <div className="max-w-[1400px] mx-auto pb-40">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-x-4 gap-y-10">
-            {products.filter(p => activeCategory === "Todas" || p.category === activeCategory).map((product) => (
-              <ProductCard key={product.id} product={product} onOpenDetail={() => setSelectedProduct(product)} />
-            ))}
+            {products
+              .filter(p => activeCategory === "Todas" || p.category === activeCategory)
+              .map((product) => (
+                <ProductCard 
+                  key={product.id} 
+                  product={product} 
+                  onOpenDetail={() => setSelectedProduct(product)} 
+                />
+              ))
+            }
           </div>
         </div>
       </main>
