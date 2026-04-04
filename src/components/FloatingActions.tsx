@@ -47,7 +47,7 @@ export default function FloatingActions({
       {/* 3. WHATSAPP */}
       <div className="fixed bottom-10 right-6 md:right-10 z-[150] group/wa">
         <a 
-          href="https://wa.me/5491132125647" 
+          href="https://wa.me/5491130302541" 
           target="_blank" 
           rel="noreferrer" 
           className="relative w-14 h-14 md:w-16 md:h-16 bg-[#25D366] rounded-full shadow-2xl flex items-center justify-center transition-all hover:scale-110 active:scale-95"
