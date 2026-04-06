@@ -129,23 +129,32 @@ export default function TiendaPage() {
       </p>
     </div>
 
-    {/* NAVEGACIÓN: Deslizable en iPhone, centrada en Mac */}
-    <nav className="w-full flex items-center gap-2 px-4 pb-2 
-      overflow-x-auto no-scrollbar flex-nowrap 
-      md:flex-wrap md:justify-center md:overflow-visible">
-      
-      {categories.map(cat => (
-        <button 
-          key={cat.id} 
-          onClick={() => setActiveCategory(cat.name)}
-          className={`flex-none px-3 py-1.5 rounded-full text-[9px] md:text-[10px] font-black uppercase transition-all shadow-sm whitespace-nowrap 
-          ${activeCategory === cat.name ? 'bg-[#EDB2D1] text-[#2B4233]' : 'bg-white text-[#2B4233]'}`}
-        >
-          {cat.name}
-        </button>
-      ))}
-    </nav>
-  </div>
+  {/* NAVEGACIÓN: Deslizable en iPhone, centrada en Mac - Degradado Izquierdo (Mágico) */}
+  <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-[#5E7361] to-transparent z-10 pointer-events-none md:hidden" />
+  
+  {/* Degradado Derecho (Mágico) */}
+  <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#5E7361] to-transparent z-10 pointer-events-none md:hidden" />
+
+  {/* NAVEGACIÓN: Ahora con padding horizontal para que el primer/último botón no se corten */}
+  <nav className="w-full flex items-center gap-2 
+    overflow-x-auto no-scrollbar flex-nowrap 
+    px-6 /* Añadimos padding interno para los degradados */
+    md:flex-wrap md:justify-center md:overflow-visible md:px-0">
+    
+    {categories.map(cat => (
+      <button 
+        key={cat.id} 
+        onClick={() => setActiveCategory(cat.name)}
+        className={`flex-none px-4 py-2 rounded-full text-[9px] md:text-[10px] font-black uppercase transition-all shadow-sm whitespace-nowrap border
+        ${activeCategory === cat.name 
+          ? 'bg-[#EDB2D1] text-[#2B4233] border-[#EDB2D1]' 
+          : 'bg-white text-[#2B4233] border-white active:bg-gray-100'}`}
+      >
+        {cat.name}
+      </button>
+    ))}
+  </nav>
+</div>
 </header>
 
 
