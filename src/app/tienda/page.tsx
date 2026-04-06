@@ -129,39 +129,25 @@ export default function TiendaPage() {
       </p>
     </div>
 
-  {/* CONTENEDOR DE FILTROS: Sin invadir el resto de la pantalla */}
-<div className="w-full relative mt-4 md:mt-6">
+  <nav className="w-full flex items-center gap-3 
+  overflow-x-auto no-scrollbar flex-nowrap 
+  px-6 /* Este es el aire en los costados para móvil */
+  mt-4 md:mt-8
+  md:flex-wrap md:justify-center md:overflow-visible md:px-0">
   
-  {/* El "Contenedor Limite": Aquí es donde sucede la magia sin ensuciar la página */}
-  <div className="relative overflow-hidden">
-    
-    {/* Degradado Izquierdo: Solo afecta a los botones */}
-    <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-[#5E7361] to-transparent z-10 pointer-events-none md:hidden" />
-    
-    {/* Degradado Derecho: Solo afecta a los botones */}
-    <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-[#5E7361] to-transparent z-10 pointer-events-none md:hidden" />
-
-    {/* LA BARRA DE BOTONES: Ahora con padding para que el degradado no tape el texto */}
-    <nav className="w-full flex items-center gap-2 
-      overflow-x-auto no-scrollbar flex-nowrap 
-      px-8 /* Este espacio permite que el botón se desvanezca antes de chocar con el borde */
-      md:flex-wrap md:justify-center md:overflow-visible md:px-0">
-      
-      {categories.map(cat => (
-        <button 
-          key={cat.id} 
-          onClick={() => setActiveCategory(cat.name)}
-          className={`flex-none px-4 py-2 rounded-full text-[9px] md:text-[10px] font-black uppercase transition-all shadow-sm border
-          ${activeCategory === cat.name 
-            ? 'bg-[#EDB2D1] text-[#2B4233] border-[#EDB2D1]' 
-            : 'bg-white text-[#2B4233] border-white active:bg-gray-100'}`}
-        >
-          {cat.name}
-        </button>
-      ))}
-    </nav>
-  </div>
-</div>
+  {categories.map(cat => (
+    <button 
+      key={cat.id} 
+      onClick={() => setActiveCategory(cat.name)}
+      className={`flex-none px-5 py-2.5 rounded-full text-[10px] font-black uppercase transition-all shadow-sm tracking-widest
+      ${activeCategory === cat.name 
+        ? 'bg-[#EDB2D1] text-[#2B4233] border border-[#EDB2D1]' 
+        : 'bg-white text-[#2B4233] border border-gray-100 active:scale-95'}`}
+    >
+      {cat.name}
+    </button>
+  ))}
+</nav>
 </div>
 </header>
 
