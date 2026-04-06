@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
 
-export default function ProductModal({ product, isOpen, onClose, allProducts }: any) {
+export default function ProductModal({ product, isOpen, onClose, allProducts, isStoreClosed }: any) {
   const { addToCart, openCart } = useCart();
-  const [comboItem, setComboItem] = useState<any>(null); // Para manejar la pregunta del combo
+  const [comboItem, setComboItem] = useState<any>(null);
 
   if (!isOpen || !product) return null;
 
@@ -19,13 +19,12 @@ export default function ProductModal({ product, isOpen, onClose, allProducts }: 
       return p.is_offer || p.is_new;
     }).slice(0, 3);
 
-  // Función para manejar la respuesta del Combo
   const confirmCombo = (wantsBoth: boolean) => {
     if (wantsBoth) {
-      addToCart(product); // El original
-      addToCart(comboItem); // La sugerencia
+      addToCart(product);
+      addToCart(comboItem);
     } else {
-      addToCart(comboItem); // Solo la sugerencia
+      addToCart(comboItem);
     }
     setComboItem(null);
     onClose();
@@ -38,7 +37,7 @@ export default function ProductModal({ product, isOpen, onClose, allProducts }: 
       
       <div className="relative bg-[#FDFBF7] w-full max-w-5xl rounded-[3rem] shadow-2xl overflow-hidden flex flex-col md:flex-row border border-white/20">
         
-        {/* PREGUNTA DE COMBO (Capa superior que aparece solo si clickean sugerencia) */}
+        {/* PREGUNTA DE COMBO */}
         {comboItem && (
           <div className="absolute inset-0 z-[100] bg-[#2B4233]/95 flex flex-col items-center justify-center text-center p-8 animate-fade-in">
             <h3 className="font-diner text-4xl text-[#EDB2D1] uppercase mb-4 leading-none">¿Armamos el combo?</h3>
@@ -65,7 +64,22 @@ export default function ProductModal({ product, isOpen, onClose, allProducts }: 
 
           <div className="mt-6 md:mt-8 flex items-center justify-center gap-4 border-t border-[#EDB2D1]/10 pt-6">
             <p className="text-3xl font-black font-mono text-[#2B4233] leading-none">${(product.price / 100).toLocaleString('es-AR')}</p>
-            <button onClick={() => { addToCart(product); onClose(); setTimeout(openCart, 300); }} className="px-8 py-3.5 bg-[#2B4233] text-white rounded-full font-black uppercase text-[10px] tracking-widest hover:bg-[#EDB2D1] hover:text-[#2B4233] transition-all shadow-xl cursor-pointer">Añadir al Carrito</button>
+            
+            <button 
+              disabled={isStoreClosed}
+              onClick={() => { 
+                addToCart(product); 
+                onClose(); 
+                setTimeout(openCart, 300); 
+              }} 
+              className={`px-8 py-3.5 rounded-full font-black uppercase text-[10px] tracking-widest transition-all shadow-xl
+                ${isStoreClosed 
+                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none' 
+                  : 'bg-[#2B4233] text-white hover:bg-[#EDB2D1] hover:text-[#2B4233] cursor-pointer'
+                }`}
+            >
+              {isStoreClosed ? "Boutique Cerrada" : "Añadir al Carrito"}
+            </button>
           </div>
 
           {suggestions.length > 0 && (
@@ -73,8 +87,17 @@ export default function ProductModal({ product, isOpen, onClose, allProducts }: 
               <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-[#2B4233]/40 mb-5 italic">Combina perfecto con</h4>
               <div className="grid grid-cols-3 gap-3 max-w-sm mx-auto">
                 {suggestions.map((s: any) => (
-                  <div key={s.id} onClick={() => setComboItem(s)} className="cursor-pointer group flex flex-col items-center">
-                    <div className="aspect-square w-full rounded-xl overflow-hidden border border-gray-100 shadow-sm mb-2 bg-white"><img src={s.image_url} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" /></div>
+                  <div 
+                    key={s.id} 
+                    onClick={() => !isStoreClosed && setComboItem(s)} 
+                    className={`group flex flex-col items-center ${!isStoreClosed ? 'cursor-pointer' : 'cursor-default'}`}
+                  >
+                    <div className="aspect-square w-full rounded-xl overflow-hidden border border-gray-100 shadow-sm mb-2 bg-white">
+                      <img 
+                        src={s.image_url} 
+                        className={`w-full h-full object-cover transition-transform duration-500 ${!isStoreClosed ? 'group-hover:scale-110' : 'grayscale'}`} 
+                      />
+                    </div>
                     <p className="text-[8px] font-josefin font-bold text-[#2B4233] line-clamp-1">{s.name}</p>
                   </div>
                 ))}

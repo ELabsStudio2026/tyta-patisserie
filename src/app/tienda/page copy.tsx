@@ -116,64 +116,49 @@ export default function TiendaPage() {
         isDisabled={isStoreClosed}
       />
 
-<header className="flex-none bg-[#5E7361] shadow-md z-20">
-  {/* CONTENEDOR ELÁSTICO: max-w-[1600px] para que no se pierda en monitores gigantes */}
-  <div className="max-w-[1600px] mx-auto w-full h-[20vh] md:h-[30vh] flex flex-col justify-between py-4 md:py-6">
-    
-    <div className="flex-1 flex flex-col justify-center text-center text-white px-4">
-      <h1 className="text-2xl md:text-6xl font-diner uppercase tracking-tight leading-none">
-        Tyta Patisserie
-      </h1>
-      <p className="text-[8px] md:text-[10px] tracking-[0.3em] md:tracking-[0.5em] uppercase mt-1 md:mt-2 opacity-80">
-        by Su Fernandez
-      </p>
-    </div>
+      <header className="flex-none h-[30vh] bg-[#5E7361] flex flex-col justify-between py-6 shadow-md z-20">
+        <div className="flex-1 flex flex-col justify-center text-center text-white">
+          <h1 className="text-3xl md:text-6xl font-diner uppercase tracking-tight">Tyta Patisserie</h1>
+          <p className="text-[10px] tracking-[0.5em] uppercase mt-2 opacity-80">by Su Fernandez</p>
+        </div>
+        <nav className="w-full flex flex-wrap justify-center gap-1.5 pb-2 px-4 no-scrollbar overflow-x-auto">
+          {categories.map(cat => (
+            <button key={cat.id} onClick={() => setActiveCategory(cat.name)}
+              className={`px-3 py-1.5 rounded-full text-[8px] font-black uppercase transition-all shadow-sm whitespace-nowrap ${activeCategory === cat.name ? 'bg-[#EDB2D1] text-[#2B4233]' : 'bg-white text-[#2B4233]'}`}>
+              {cat.name}
+            </button>
+          ))}
+        </nav>
+      </header>
 
-    {/* NAVEGACIÓN: Deslizable en iPhone, centrada en Mac */}
-    <nav className="w-full flex items-center gap-2 px-4 pb-2 
-      overflow-x-auto no-scrollbar flex-nowrap 
-      md:flex-wrap md:justify-center md:overflow-visible">
-      
-      {categories.map(cat => (
-        <button 
-          key={cat.id} 
-          onClick={() => setActiveCategory(cat.name)}
-          className={`flex-none px-3 py-1.5 rounded-full text-[9px] md:text-[10px] font-black uppercase transition-all shadow-sm whitespace-nowrap 
-          ${activeCategory === cat.name ? 'bg-[#EDB2D1] text-[#2B4233]' : 'bg-white text-[#2B4233]'}`}
-        >
-          {cat.name}
-        </button>
-      ))}
-    </nav>
-  </div>
-</header>
+      <main id="scroll-area" className="flex-1 overflow-y-auto bg-white p-6 scroll-smooth">
+        <div className="max-w-7xl mx-auto pb-40">
+          
+          {/* Mensaje de Estado (Dinamico) */}
+          {isStoreClosed && (
+            <div className="mb-10 bg-[#FDFBF7] border-2 border-dashed border-[#EDB2D1] rounded-[3rem] p-10 text-center animate-in fade-in duration-700">
+              <h2 className="font-diner text-4xl text-[#2B4233] uppercase leading-none mb-3">Boutique en Pausa</h2>
+              <p className="text-sm italic text-[#2B4233]/60 max-w-md mx-auto leading-relaxed">
+                {storeMessage}
+              </p>
+            </div>
+          )}
 
-
-      {/* Cambiamos max-w-7xl por max-w-[1600px] o directamente removemos el límite para que use todo el ancho */}
-<main id="scroll-area" className="flex-1 overflow-y-auto bg-white p-4 md:p-10 scroll-smooth">
-  <div className="max-w-[1600px] mx-auto pb-40"> 
-    
-    {/* GRILLA INTELIGENTE: 
-        2 columnas en móvil (grid-cols-2)
-        3 en tablets (sm:grid-cols-3)
-        4 en laptops (lg:grid-cols-4)
-        5 o 6 en monitores grandes (xl:grid-cols-5 2xl:grid-cols-6)
-    */}
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 md:gap-8">
-      {products
-        .filter(p => activeCategory === "Todas" || p.category === activeCategory)
-        .map(product => (
-          <ProductCard 
-            key={product.id} 
-            product={product} 
-            onOpenDetail={() => setSelectedProduct(product)} 
-            isDisabled={isStoreClosed} 
-          />
-        ))
-      }
-    </div>
-  </div>
-</main>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-x-4 gap-y-10">
+            {products
+              .filter(p => activeCategory === "Todas" || p.category === activeCategory)
+              .map(product => (
+                <ProductCard 
+                  key={product.id} 
+                  product={product} 
+                  onOpenDetail={() => setSelectedProduct(product)} 
+                  isDisabled={isStoreClosed} 
+                />
+              ))
+            }
+          </div>
+        </div>
+      </main>
       <Footer />
     </div>
   );

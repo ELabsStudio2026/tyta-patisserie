@@ -5,19 +5,17 @@ export default function FloatingActions({
 }: any) {
   return (
     <>
-      {/* 1. IMPERDIBLES */}
-      {featuredCount > 0 && !showMarketing && (
-        <button 
-          onClick={onOpenMarketing} 
-          className="fixed top-8 left-8 z-[200] w-14 h-14 md:w-16 md:h-16 rounded-full bg-white shadow-xl border border-[#EDB2D1]/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95 group animate-fade-in"
-        >
-          <span className="text-2xl animate-pulse">✨</span>
-          {/* Tooltip Rosa */}
-          <div className="absolute left-full ml-4 bg-[#EDB2D1] text-[#2B4233] text-[7px] font-black uppercase px-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap tracking-widest shadow-lg pointer-events-none border border-[#2B4233]/5">
-            Imperdibles de hoy
-          </div>
-        </button>
-      )}
+      {/* 1. IMPERDIBLES - Modificado para que aparezca siempre que se llame desde la página */}
+      <button 
+        onClick={onOpenMarketing} 
+        className="fixed top-8 left-8 z-[200] w-14 h-14 md:w-16 md:h-16 rounded-full bg-white shadow-xl border border-[#EDB2D1]/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95 group animate-fade-in"
+      >
+        <span className="text-2xl animate-pulse">✨</span>
+        {/* Tooltip Rosa */}
+        <div className="absolute left-full ml-4 bg-[#EDB2D1] text-[#2B4233] text-[7px] font-black uppercase px-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap tracking-widest shadow-lg pointer-events-none border border-[#2B4233]/5">
+          Imperdibles de hoy
+        </div>
+      </button>
 
       {/* 2. CARRITO */}
       <div className="fixed bottom-10 left-6 md:left-10 z-[150] group/cart">
@@ -31,7 +29,6 @@ export default function FloatingActions({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
           </svg>
 
-          {/* TOOLTIP ROSA CON LETRAS VERDES */}
           <div className="absolute left-full ml-4 bg-[#EDB2D1] text-[#2B4233] text-[7px] font-black uppercase px-3 py-1.5 rounded-full opacity-0 group-hover/cart:opacity-100 transition-all translate-x-[-10px] group-hover/cart:translate-x-0 whitespace-nowrap tracking-widest shadow-lg pointer-events-none border border-[#2B4233]/5">
             Ver mi pedido
           </div>
