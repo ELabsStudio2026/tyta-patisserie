@@ -59,20 +59,30 @@ export default function TiendaPage() {
     }
     fetchData();
 
-    // ESCUCHA REALTIME: Configuración y Horarios
-    const configChannel = supabase.channel('store-updates')
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'store_config' }, 
-        async (payload) => {
-          setConfig(payload.new);
-          await refreshStoreStatus(payload.new);
-        }
-      )
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'horarios_tienda_online' }, 
-        async () => {
-          if (config) await refreshStoreStatus(config);
-        }
-      )
-      .subscribe();
+    // Dentro del useEffect de TiendaPage...
+
+// ESCUCHA REALTIME MEJORADA
+const configChannel = supabase.channel('store-updates')
+  .on('postgres_changes', 
+    { 
+      event: '*', // Escuchamos todo (UPDATE, INSERT, etc)
+      schema: 'public', 
+      table: 'store_config' 
+    }, 
+    async (payload: any) => {
+      // Forzamos la actualización con los nuevos datos que vienen en payload.new
+      const newConfig = payload.new;
+      setConfig(newConfig);
+      
+      // Recalculamos el estado inmediatamente
+      const status = await getDetailedStoreStatus(newConfig);
+      setIsStoreClosed(!status.isOpen);
+      setStoreMessage(status.message);
+      
+      console.log("Cambio detectado en tiempo real:", status);
+    }
+  )
+  .subscribe();
 
     // ESCUCHA REALTIME: Productos
     const productChannel = supabase.channel('product-updates')

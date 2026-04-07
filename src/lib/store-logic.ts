@@ -1,27 +1,33 @@
 // src/lib/store-logic.ts
 import { supabase } from "./supabase";
 
-/**
- * Determina el estado de la tienda consultando la base de datos
- * para validar SOS manual y horarios por día.
- */
 export async function getDetailedStoreStatus(config: any) {
   if (!config) return { isOpen: false, message: "" };
 
-  // 1. PRIORIDAD: SOS Manual
-  if (config.is_closed_manual) {
+  // 1. PRIORIDAD ABSOLUTA: SIEMPRE ABIERTO
+  // Usamos == true para capturar el valor sea cual sea el formato que venga de la DB
+  if (config.is_always_open == true) {
+    return { 
+      isOpen: true, 
+      message: "¡Boutique abierta! Disfrutá de nuestras delicias." 
+    };
+  }
+
+  // 2. SEGUNDA PRIORIDAD: SOS Manual (is_closed_manual)
+  if (config.is_closed_manual == true) {
     return { 
       isOpen: false, 
       message: "Podés recorrer nuestro catálogo y tentar a tu paladar, pero el carrito se habilitará cuando abramos nuestras puertas nuevamente." 
     };
   }
 
-  // 2. Tiempo actual (Local)
+  // 3. Lógica de Horarios (Solo si lo anterior es false)
   const ahora = new Date();
-  const diaSemana = ahora.getDay(); // 0=Dom, 1=Lun...
-  const horaActual = ahora.toLocaleTimeString('en-GB', { hour12: false }).substring(0, 5); // "HH:MM"
+  const diaSemana = ahora.getDay();
+  // Forzamos el formato HH:MM de forma manual para evitar variaciones de navegador
+  const horaActual = ahora.getHours().toString().padStart(2, '0') + ":" + 
+                     ahora.getMinutes().toString().padStart(2, '0');
 
-  // 3. Consultar la tabla de horarios vinculada
   const { data: horarioHoy } = await supabase
     .from('horarios_tienda_online')
     .select('*')
@@ -33,22 +39,23 @@ export async function getDetailedStoreStatus(config: any) {
     return { isOpen: false, message: "Hoy nos encontramos cerrados. ¡Te esperamos mañana!" };
   }
 
-  // 4. Validación de Turnos (Mañana y Tarde)
   const { apertura_manana, cierre_manana, apertura_tarde, cierre_tarde } = horarioHoy;
 
-  const estaEnManana = apertura_manana && cierre_manana && 
-                       (horaActual >= apertura_manana.substring(0, 5) && horaActual <= cierre_manana.substring(0, 5));
-  
-  const estaEnTarde = apertura_tarde && cierre_tarde && 
-                      (horaActual >= apertura_tarde.substring(0, 5) && horaActual <= cierre_tarde.substring(0, 5));
+  // Limpiamos los strings de la DB para comparar solo los primeros 5 caracteres (HH:MM)
+  const hAmA = apertura_manana?.substring(0, 5);
+  const hAmC = cierre_manana?.substring(0, 5);
+  const hPmA = apertura_tarde?.substring(0, 5);
+  const hPmC = cierre_tarde?.substring(0, 5);
+
+  const estaEnManana = hAmA && hAmC && (horaActual >= hAmA && horaActual <= hAmC);
+  const estaEnTarde = hPmA && hPmC && (horaActual >= hPmA && horaActual <= hPmC);
 
   if (estaEnManana || estaEnTarde) {
     return { isOpen: true, message: "¡Boutique abierta! Disfrutá de nuestras delicias." };
   }
 
-  // 5. Mensaje de pausa si está entre turnos o antes de abrir
-  if (apertura_tarde && horaActual < apertura_tarde.substring(0, 5) && horaActual > (cierre_manana || "00:00")) {
-    return { isOpen: false, message: `Estamos en pausa. Abrimos de nuevo a las ${apertura_tarde.substring(0, 5)}hs.` };
+  if (hPmA && horaActual < hPmA && horaActual > (hAmC || "00:00")) {
+    return { isOpen: false, message: `Estamos en pausa. Abrimos de nuevo a las ${hPmA}hs.` };
   }
 
   return { isOpen: false, message: "Boutique cerrada por hoy. ¡Consultá nuestros horarios de mañana!" };
