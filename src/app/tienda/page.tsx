@@ -36,17 +36,21 @@ export default function TiendaPage() {
     setIsMounted(true);
     
     async function fetchData() {
+      // 1. Cargamos categorías y productos
       const { data: cats } = await supabase.from('categories').select('*').order('name');
       const { data: prods } = await supabase.from('products').select('*').eq('is_visible', true).order('name');
+      
+      // 2. Cargamos la configuración (Aquí viene el WhatsApp)
       const { data: conf } = await supabase.from('store_config').select('*').single();
       
       if (cats) setCategories([{ id: 'all', name: 'Todas' }, ...cats]);
       if (prods) setProducts(prods);
+      
       if (conf) {
         setConfig(conf);
         await refreshStoreStatus(conf);
         
-        // Popup solo si la tienda está abierta
+        // Popup de marketing (solo si la tienda está abierta)
         const status = await getDetailedStoreStatus(conf);
         if (status.isOpen) {
           setTimeout(() => setShowMarketingPopup(true), 1500);
@@ -55,7 +59,7 @@ export default function TiendaPage() {
     }
     fetchData();
 
-    // ESCUCHA REALTIME: Detecta cambios en SOS o en la tabla de Horarios
+    // ESCUCHA REALTIME: Configuración y Horarios
     const configChannel = supabase.channel('store-updates')
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'store_config' }, 
         async (payload) => {
@@ -65,12 +69,12 @@ export default function TiendaPage() {
       )
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'horarios_tienda_online' }, 
         async () => {
-          // Si cambian los horarios, refrescamos con el config actual
           if (config) await refreshStoreStatus(config);
         }
       )
       .subscribe();
 
+    // ESCUCHA REALTIME: Productos
     const productChannel = supabase.channel('product-updates')
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'products' }, 
         (payload) => {
@@ -82,13 +86,14 @@ export default function TiendaPage() {
       supabase.removeChannel(configChannel);
       supabase.removeChannel(productChannel);
     };
-  }, [config, refreshStoreStatus]);
+  }, [refreshStoreStatus]); // Quitamos config de aquí para evitar loops infinitos
 
   if (!isMounted) return null;
 
   return (
     <div className="flex flex-col h-screen bg-[#FDFBF7] font-josefin overflow-hidden relative text-[#2B4233]">
       
+      {/* Botones Flotantes */}
       <FloatingActions 
         featuredCount={products.filter(p => p.is_offer || p.is_new).length}
         onOpenMarketing={() => setShowMarketingPopup(true)}
@@ -97,6 +102,7 @@ export default function TiendaPage() {
         cartFlash={cartFlash}
       />
 
+      {/* Popups y Modales */}
       <MarketingPopup 
         isOpen={showMarketingPopup} 
         onClose={() => setShowMarketingPopup(false)} 
@@ -105,7 +111,10 @@ export default function TiendaPage() {
         isDisabled={isStoreClosed} 
       />
 
-      <CartDrawer isStoreClosed={isStoreClosed} />
+      {/* EL PASO CLAVE: Aquí enviamos el objeto 'config' (con el WhatsApp) y el estado 'isClosed' */}
+      {config && (
+        <CartDrawer storeStatus={{ ...config, isClosed: isStoreClosed }} />
+      )}
 
       <ProductModal 
         isOpen={!!selectedProduct}
@@ -116,67 +125,56 @@ export default function TiendaPage() {
         isDisabled={isStoreClosed}
       />
 
-<header className="flex-none bg-[#5E7361] shadow-md z-20">
-  {/* CONTENEDOR ELÁSTICO: max-w-[1600px] para que no se pierda en monitores gigantes */}
-  <div className="max-w-[1600px] mx-auto w-full h-[20vh] md:h-[30vh] flex flex-col justify-between py-4 md:py-6">
-    
-    <div className="flex-1 flex flex-col justify-center text-center text-white px-4">
-      <h1 className="text-2xl md:text-6xl font-diner uppercase tracking-tight leading-none">
-        Tyta Patisserie
-      </h1>
-      <p className="text-[8px] md:text-[10px] tracking-[0.3em] md:tracking-[0.5em] uppercase mt-1 md:mt-2 opacity-80">
-        by Su Fernandez
-      </p>
-    </div>
+      {/* HEADER DINER STYLE */}
+      <header className="flex-none bg-[#5E7361] shadow-md z-20">
+        <div className="max-w-[1600px] mx-auto w-full h-[20vh] md:h-[30vh] flex flex-col justify-between py-4 md:py-6">
+          
+          <div className="flex-1 flex flex-col justify-center text-center text-white px-4">
+            <h1 className="text-2xl md:text-6xl font-diner uppercase tracking-tight leading-none">
+              Tyta Patisserie
+            </h1>
+            <p className="text-[8px] md:text-[10px] tracking-[0.3em] md:tracking-[0.5em] uppercase mt-1 md:mt-2 opacity-80">
+              by Su Fernandez
+            </p>
+          </div>
 
-  <nav className="w-full flex items-center gap-3 
-  overflow-x-auto no-scrollbar flex-nowrap 
-  px-6 /* Este es el aire en los costados para móvil */
-  mt-4 md:mt-8
-  md:flex-wrap md:justify-center md:overflow-visible md:px-0">
-  
-  {categories.map(cat => (
-    <button 
-      key={cat.id} 
-      onClick={() => setActiveCategory(cat.name)}
-      className={`flex-none px-5 py-2.5 rounded-full text-[10px] font-black uppercase transition-all shadow-sm tracking-widest
-      ${activeCategory === cat.name 
-        ? 'bg-[#EDB2D1] text-[#2B4233] border border-[#EDB2D1]' 
-        : 'bg-white text-[#2B4233] border border-gray-100 active:scale-95'}`}
-    >
-      {cat.name}
-    </button>
-  ))}
-</nav>
-</div>
-</header>
+          {/* NAVEGACIÓN DE CATEGORÍAS (SIN DEGRADADOS LATERALES) */}
+          <nav className="w-full flex items-center gap-3 overflow-x-auto no-scrollbar flex-nowrap px-6 mt-4 md:mt-8 md:flex-wrap md:justify-center md:overflow-visible md:px-0">
+            {categories.map(cat => (
+              <button 
+                key={cat.id} 
+                onClick={() => setActiveCategory(cat.name)}
+                className={`flex-none px-5 py-2.5 rounded-full text-[10px] font-black uppercase transition-all shadow-sm tracking-widest
+                ${activeCategory === cat.name 
+                  ? 'bg-[#EDB2D1] text-[#2B4233] border border-[#EDB2D1]' 
+                  : 'bg-white text-[#2B4233] border border-gray-100 active:scale-95'}`}
+              >
+                {cat.name}
+              </button>
+            ))}
+          </nav>
+        </div>
+      </header>
 
+      {/* ÁREA DE PRODUCTOS */}
+      <main id="scroll-area" className="flex-1 overflow-y-auto bg-white p-4 md:p-10 scroll-smooth">
+        <div className="max-w-[1600px] mx-auto pb-40"> 
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 md:gap-8">
+            {products
+              .filter(p => activeCategory === "Todas" || p.category === activeCategory)
+              .map(product => (
+                <ProductCard 
+                  key={product.id} 
+                  product={product} 
+                  onOpenDetail={() => setSelectedProduct(product)} 
+                  isDisabled={isStoreClosed} 
+                />
+              ))
+            }
+          </div>
+        </div>
+      </main>
 
-      {/* Cambiamos max-w-7xl por max-w-[1600px] o directamente removemos el límite para que use todo el ancho */}
-<main id="scroll-area" className="flex-1 overflow-y-auto bg-white p-4 md:p-10 scroll-smooth">
-  <div className="max-w-[1600px] mx-auto pb-40"> 
-    
-    {/* GRILLA INTELIGENTE: 
-        2 columnas en móvil (grid-cols-2)
-        3 en tablets (sm:grid-cols-3)
-        4 en laptops (lg:grid-cols-4)
-        5 o 6 en monitores grandes (xl:grid-cols-5 2xl:grid-cols-6)
-    */}
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 md:gap-8">
-      {products
-        .filter(p => activeCategory === "Todas" || p.category === activeCategory)
-        .map(product => (
-          <ProductCard 
-            key={product.id} 
-            product={product} 
-            onOpenDetail={() => setSelectedProduct(product)} 
-            isDisabled={isStoreClosed} 
-          />
-        ))
-      }
-    </div>
-  </div>
-</main>
       <Footer />
     </div>
   );

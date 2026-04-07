@@ -5,14 +5,21 @@ import { supabase } from "@/lib/supabase";
 
 export default function PaginaPrueba() {
   const [dbValue, setDbValue] = useState<boolean | null>(null);
+  const [whatsapp, setWhatsapp] = useState<string | null>(null); // Nuevo estado para el teléfono
   const [configId, setConfigId] = useState<any>(null);
 
-  // 1. MONITOR (LA LUZ) - Ya sabemos que funciona perfecto
+  // 1. MONITOR (LA LUZ Y LOS DATOS)
   useEffect(() => {
     async function leerDb() {
-      const { data } = await supabase.from('store_config').select('id, is_closed_manual').single();
+      // Agregamos company_whatsapp a la selección
+      const { data } = await supabase
+        .from('store_config')
+        .select('id, is_closed_manual, company_whatsapp')
+        .single();
+
       if (data) {
         setDbValue(data.is_closed_manual);
+        setWhatsapp(data.company_whatsapp); // Guardamos el WhatsApp
         setConfigId(data.id);
       }
     }
@@ -20,21 +27,17 @@ export default function PaginaPrueba() {
 
     const channel = supabase.channel('monitor-luz')
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'store_config' }, 
-        (payload) => { setDbValue(payload.new.is_closed_manual); }
+        (payload) => { 
+          setDbValue(payload.new.is_closed_manual); 
+          setWhatsapp(payload.new.company_whatsapp); // Actualizar si cambia en tiempo real
+        }
       ).subscribe();
 
     return () => { supabase.removeChannel(channel); };
   }, []);
 
-  // 2. EL ACTIVADOR (EL SWITCH)
-  // Función pura: Manda la orden y reporta si la base de datos la rechazó
   const enviarOrden = async (nuevoEstado: boolean) => {
-    if (!configId) {
-      console.error("No se detectó ID de fila");
-      return;
-    }
-
-    console.log("Enviando orden a Supabase...", nuevoEstado);
+    if (!configId) return;
     
     const { error } = await supabase
       .from('store_config')
@@ -42,15 +45,14 @@ export default function PaginaPrueba() {
       .eq('id', configId);
 
     if (error) {
-      // SI ESTO APARECE, es que Supabase tiene el RLS activado y no te deja escribir
-      alert("ERROR DE SUPABASE: " + error.message + "\n\nTip: Revisa las políticas RLS de la tabla store_config.");
+      alert("ERROR DE SUPABASE: " + error.message);
     }
   };
 
-  if (dbValue === null) return <div className="p-10 text-[#EDB2D1] font-mono">CONECTANDO MONITOR...</div>;
+  if (dbValue === null) return <div className="p-10 text-[#EDB2D1] font-mono bg-black min-h-screen">CONECTANDO MONITOR...</div>;
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center font-mono gap-10">
+    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center font-mono gap-10 p-6">
       
       {/* MONITOR PASIVO */}
       <div className="text-center space-y-4">
@@ -63,43 +65,50 @@ export default function PaginaPrueba() {
         </p>
       </div>
 
+      {/* --- NUEVA SECCIÓN: DATOS DE LA EMPRESA --- */}
+      <div className="w-full max-w-xs bg-zinc-900/50 border border-zinc-800 rounded-2xl p-4 text-center">
+        <p className="text-[9px] text-zinc-500 uppercase tracking-[0.2em] mb-2 font-bold">WhatsApp Configurado</p>
+        <div className="bg-black py-3 rounded-lg border border-zinc-700">
+          <p className="text-[#EDB2D1] text-sm font-bold tracking-widest">
+            {whatsapp ? whatsapp : "⚠ NO DEFINIDO"}
+          </p>
+        </div>
+        <p className="text-[8px] text-zinc-600 mt-2 italic">Este número recibirá los pedidos de la boutique.</p>
+      </div>
+
       <div className="w-full h-px bg-zinc-800 max-w-xs" />
 
-      {/* ACTIVADOR CIEGO (SWITCH DE DOS BOTONES) */}
-      <div className="flex flex-col items-center gap-6 bg-zinc-900 p-10 rounded-[3rem] border border-zinc-800">
+      {/* ACTIVADOR CIEGO (MANDO DE CONTROL) */}
+      <div className="flex flex-col items-center gap-6 bg-zinc-900 p-10 rounded-[3rem] border border-zinc-800 shadow-xl">
         <p className="text-[10px] text-zinc-400 uppercase font-bold tracking-widest">Mando de Control</p>
         
-        {/* Botón Superior: Forzar Abierto */}
         <button 
           onClick={() => enviarOrden(false)}
           className={`w-40 py-4 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all border-2 
-            ${dbValue === false ? 'bg-green-600 border-green-400 text-white' : 'bg-transparent border-zinc-700 text-zinc-500 hover:border-green-500'}`}
+            ${dbValue === false ? 'bg-green-600 border-green-400 text-white shadow-lg shadow-green-900/20' : 'bg-transparent border-zinc-700 text-zinc-500 hover:border-green-500'}`}
         >
           ARRIBA: ABRIR
         </button>
 
-        {/* El Switch visual: Solo se mueve si la DB cambia */}
         <div className="w-12 h-24 bg-black rounded-full p-2 border border-zinc-700 relative">
           <div className={`w-8 h-8 bg-white rounded-full transition-all duration-500 shadow-lg transform ${
             dbValue ? 'translate-y-12' : 'translate-y-0'
           }`} />
         </div>
 
-        {/* Botón Inferior: Forzar Cerrado */}
         <button 
           onClick={() => enviarOrden(true)}
           className={`w-40 py-4 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all border-2
-            ${dbValue === true ? 'bg-red-600 border-red-400 text-white' : 'bg-transparent border-zinc-700 text-zinc-500 hover:border-red-500'}`}
+            ${dbValue === true ? 'bg-red-600 border-red-400 text-white shadow-lg shadow-red-900/20' : 'bg-transparent border-zinc-700 text-zinc-500 hover:border-red-500'}`}
         >
           ABAJO: CERRAR
         </button>
       </div>
 
       <p className="text-[9px] text-zinc-600 uppercase text-center leading-relaxed">
-        ID: {configId} <br/>
-        Si presionas y la luz no cambia, <br/> el error saldrá en un cartel.
+        Fila ID: {configId} <br/>
+        Si el número arriba no coincide con Supabase, <br/> revisa el nombre del campo.
       </p>
-
     </div>
   );
 }
