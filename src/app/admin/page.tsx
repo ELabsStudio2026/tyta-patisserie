@@ -14,8 +14,7 @@ export default function AdminPage() {
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [mounted, setMounted] = useState(false); 
-  const [activeTab, setActiveTab] = useState<'productos' | 'config' | 'perfil'>('productos');
-  const [isAdding, setIsAdding] = useState(false);
+  const [activeTab, setActiveTab] = useState<'productos' | 'master' | 'config' | 'horarios'>('productos');const [isAdding, setIsAdding] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any | null>(null);
   
   // --- ESTADO UNIFICADO DEL SEMÁFORO ---
