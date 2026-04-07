@@ -7,6 +7,8 @@ import AdminConfig from "@/components/admin/AdminConfig";
 import AdminProfile from "@/components/admin/AdminProfile";
 import AdminInventory from "@/components/admin/AdminInventory";
 import AdminHeader from "@/components/admin/AdminHeader";
+import AdminStoreSettings from "@/components/admin/AdminStoreSettings";
+
 
 export default function AdminPage() {
   const [products, setProducts] = useState<any[]>([]);
@@ -112,7 +114,7 @@ export default function AdminPage() {
           />
         )}
 
-        {activeTab === 'config' && (
+        {activeTab === 'master' && (
           <div className="flex flex-col items-center gap-6 py-10">
             
             {/* COMPONENTE DE BOTONES MAESTROS */}
@@ -149,7 +151,8 @@ export default function AdminPage() {
           </div>
         )}
 
-        {activeTab === 'perfil' && <AdminProfile />}
+        {activeTab === 'config' && <AdminStoreSettings />}
+        {activeTab === 'horarios' && <AdminProfile />}
       </main>
 
       <ProductAdminModal 

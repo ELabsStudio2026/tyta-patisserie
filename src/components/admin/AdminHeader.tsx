@@ -15,8 +15,9 @@ export default function AdminHeader({ activeTab, setActiveTab, onNewProduct }: A
         <nav className="flex bg-[#FDFBF7] p-1 rounded-full border border-gray-100 shadow-inner">
           {[
             { id: 'productos', label: 'Productos' },
-            { id: 'config', label: 'Panel Maestro' },
-            { id: 'perfil', label: 'Perfil Negocio' }
+            { id: 'master', label: 'Panel Maestro' },
+            { id: 'config', label: 'Configuración' },
+            { id: 'horarios', label: 'Horarios' }
           ].map((tab) => (
             <button 
               key={tab.id}
