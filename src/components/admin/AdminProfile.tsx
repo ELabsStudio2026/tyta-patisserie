@@ -47,71 +47,58 @@ export default function AdminProfile() {
       </div>
 
       {/* LISTA DE DÍAS (Mobile First: Cards verticales) */}
-      <div className="grid grid-cols-1 gap-4">
-        {horarios.map((dia) => (
-          <div key={dia.id} className={`bg-white p-5 sm:p-8 rounded-[2.5rem] border transition-all shadow-sm ${dia.esta_cerrado ? 'border-red-100 opacity-80' : 'border-gray-100'}`}>
-            
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h4 className="font-diner text-2xl text-[#2B4233] uppercase leading-none">{dia.dia_nombre}</h4>
-                <p className="text-[8px] font-black uppercase tracking-widest text-gray-400 mt-1">Sede: {dia.nombre_tienda}</p>
-              </div>
-              
-              {/* Switch de cierre por día */}
-              <button 
-                onClick={() => handleUpdateDay(dia.id, { esta_cerrado: !dia.esta_cerrado })}
-                className={`px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${dia.esta_cerrado ? 'bg-red-500 text-white' : 'bg-[#2B4233]/5 text-[#2B4233]'}`}
-              >
-                {dia.esta_cerrado ? "CERRADO" : "OPERATIVO"}
-              </button>
-            </div>
+      // Dentro de tu componente de gestión de horarios (AdminProfile)
 
-            {!dia.esta_cerrado && (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 animate-in slide-in-from-top-2">
-                {/* TURNO MAÑANA */}
-                <div className="flex flex-col gap-1">
-                  <label className="text-[7px] font-black uppercase text-gray-400 ml-2">Apertura Mañana</label>
-                  <input 
-                    type="time" 
-                    value={dia.apertura_manana || ""} 
-                    onChange={(e) => handleUpdateDay(dia.id, { apertura_manana: e.target.value })}
-                    className="bg-[#FDFBF7] border border-gray-50 rounded-xl py-2 px-3 text-xs font-mono outline-none focus:border-[#EDB2D1]"
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label className="text-[7px] font-black uppercase text-gray-400 ml-2">Cierre Mañana</label>
-                  <input 
-                    type="time" 
-                    value={dia.cierre_manana || ""} 
-                    onChange={(e) => handleUpdateDay(dia.id, { cierre_manana: e.target.value })}
-                    className="bg-[#FDFBF7] border border-gray-50 rounded-xl py-2 px-3 text-xs font-mono outline-none focus:border-[#EDB2D1]"
-                  />
-                </div>
+<div className="grid grid-cols-1 gap-4">
+  {diasSemana.map((dia) => (
+    <div key={dia} className="bg-white rounded-[2rem] p-5 shadow-sm border border-gray-50 flex flex-col gap-3">
+      
+      {/* CABECERA COMPACTA */}
+      <div className="flex justify-between items-center border-b border-gray-50 pb-2">
+        <h3 className="font-diner text-2xl uppercase text-[#2B4233] leading-none">
+          {dia}
+        </h3>
+        <button className="bg-[#FDFBF7] px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest text-[#2B4233] border border-gray-100">
+          Operativo
+        </button>
+      </div>
 
-                {/* TURNO TARDE */}
-                <div className="flex flex-col gap-1">
-                  <label className="text-[7px] font-black uppercase text-gray-400 ml-2">Apertura Tarde</label>
-                  <input 
-                    type="time" 
-                    value={dia.apertura_tarde || ""} 
-                    onChange={(e) => handleUpdateDay(dia.id, { apertura_tarde: e.target.value })}
-                    className="bg-[#FDFBF7] border border-gray-50 rounded-xl py-2 px-3 text-xs font-mono outline-none focus:border-[#EDB2D1]"
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label className="text-[7px] font-black uppercase text-gray-400 ml-2">Cierre Tarde</label>
-                  <input 
-                    type="time" 
-                    value={dia.cierre_tarde || ""} 
-                    onChange={(e) => handleUpdateDay(dia.id, { cierre_tarde: e.target.value })}
-                    className="bg-[#FDFBF7] border border-gray-50 rounded-xl py-2 px-3 text-xs font-mono outline-none focus:border-[#EDB2D1]"
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
+      {/* CONTROLES COMPACTOS EN GRILLA */}
+      <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+        
+        {/* TURNO MAÑANA */}
+        <div className="space-y-1">
+          <label className="text-[7px] uppercase tracking-[0.2em] text-gray-400 font-black ml-2">Apertura AM</label>
+          <select className="w-full bg-[#FDFBF7] border border-gray-100 rounded-xl px-3 py-2 text-[11px] outline-none focus:border-[#EDB2D1]">
+            <option>9:00 a.m.</option>
+          </select>
+        </div>
+        
+        <div className="space-y-1">
+          <label className="text-[7px] uppercase tracking-[0.2em] text-gray-400 font-black ml-2">Cierre AM</label>
+          <select className="w-full bg-[#FDFBF7] border border-gray-100 rounded-xl px-3 py-2 text-[11px] outline-none focus:border-[#EDB2D1]">
+            <option>1:00 p.m.</option>
+          </select>
+        </div>
+
+        {/* TURNO TARDE */}
+        <div className="space-y-1">
+          <label className="text-[7px] uppercase tracking-[0.2em] text-gray-400 font-black ml-2">Apertura PM</label>
+          <select className="w-full bg-[#FDFBF7] border border-gray-100 rounded-xl px-3 py-2 text-[11px] outline-none focus:border-[#EDB2D1]">
+            <option>1:00 p.m.</option>
+          </select>
+        </div>
+        
+        <div className="space-y-1">
+          <label className="text-[7px] uppercase tracking-[0.2em] text-gray-400 font-black ml-2">Cierre PM</label>
+          <select className="w-full bg-[#FDFBF7] border border-gray-100 rounded-xl px-3 py-2 text-[11px] outline-none focus:border-[#EDB2D1]">
+            <option>6:00 p.m.</option>
+          </select>
+        </div>
+
       </div>
     </div>
+  ))}
+</div>
   );
 }
