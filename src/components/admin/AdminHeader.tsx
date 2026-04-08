@@ -61,46 +61,52 @@ export default function AdminHeader({
 
   return (
     <>
-      <header className="max-w-[1400px] mx-auto mb-6 flex flex-col items-center bg-white p-4 lg:p-6 rounded-[2.5rem] shadow-sm border border-[#EDB2D1]/10 gap-6">
+      <header className="max-w-[1400px] mx-auto mb-6 flex flex-col items-center bg-white p-4 lg:p-6 rounded-[2.5rem] shadow-sm border border-[#EDB2D1]/10 gap-6 animate-in fade-in duration-700">
         
-        {/* LOGO */}
+        {/* LOGO E IDENTIDAD COMPACTA */}
         <div className="flex flex-col items-center gap-1">
           <h1 className="text-3xl lg:text-4xl font-diner uppercase leading-none tracking-tighter text-[#2B4233]">Gestión Tyta</h1>
-          <div className="flex gap-4">
+          <div className="flex gap-3">
             {activeTab === 'productos' && (
-              <button onClick={() => setShowCatModal(true)} className="text-[7px] font-black uppercase tracking-[0.2em] text-[#EDB2D1] flex items-center gap-1">
+              <button onClick={() => setShowCatModal(true)} className="text-[7px] font-black uppercase tracking-[0.2em] text-[#EDB2D1] flex items-center gap-1.5 active:scale-95">
                 📂 Categorías
               </button>
             )}
-            <Link href="/tienda" target="_blank" className="text-[7px] font-black uppercase tracking-[0.2em] text-[#2B4233]/40">Tienda ↗</Link>
+            <Link href="/tienda" target="_blank" className="text-[7px] font-black uppercase tracking-[0.2em] text-[#2B4233]/40 hover:text-[#2B4233]">Tienda ↗</Link>
           </div>
         </div>
 
-        {/* SELECTOR INFINITO (MOBILE & DESKTOP) */}
-        <nav className="relative w-full max-w-[320px] lg:max-w-md group">
-          {/* Degradados laterales para dar sensación de esfera/giro */}
-          <div className="absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
-          <div className="absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+        {/* SELECTOR INFINITO (LA RUEDA DE SELECCIÓN) */}
+        <nav className="relative w-full max-w-[320px] lg:max-w-md group bg-[#FDFBF7] rounded-full p-1 border border-gray-100 shadow-inner">
+          
+          {/* Degradados laterales suaves para efecto esfera */}
+          <div className="absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-[#FDFBF7] to-transparent z-10 pointer-events-none rounded-l-full" />
+          <div className="absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-[#FDFBF7] to-transparent z-10 pointer-events-none rounded-r-full" />
           
           <div 
             ref={scrollRef}
             onScroll={handleScroll}
-            className="flex gap-4 overflow-x-auto no-scrollbar snap-x snap-mandatory py-2 px-20"
+            className="flex gap-4 overflow-x-auto no-scrollbar snap-x snap-mandatory py-2 px-16"
           >
-            {infiniteTabs.map((tab, index) => (
-              <button 
-                key={`${tab.id}-${index}`}
-                data-active={index >= tabs.length && index < tabs.length * 2 && activeTab === tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`snap-center flex-none px-6 py-2 rounded-full text-[9px] font-black uppercase tracking-[0.2em] transition-all duration-300 ${
-                  activeTab === tab.id && index >= tabs.length && index < tabs.length * 2
-                  ? 'bg-[#2B4233] text-[#EDB2D1] shadow-lg scale-110 opacity-100' 
-                  : 'text-gray-300 scale-90 opacity-40 grayscale'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
+            {infiniteTabs.map((tab, index) => {
+              // Verificamos si este ítem del medio corresponde a la pestaña activa
+              const isActive = activeTab === tab.id && index >= tabs.length && index < tabs.length * 2;
+              
+              return (
+                <button 
+                  key={`${tab.id}-${index}`}
+                  data-active={isActive}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`snap-center flex-none px-6 py-2.5 rounded-full text-[9px] font-black uppercase tracking-[0.15em] lg:tracking-[0.2em] transition-all duration-300 ${
+                    isActive
+                    ? 'bg-[#2B4233] text-[#EDB2D1] shadow-lg scale-110 opacity-100' 
+                    : 'text-[#2B4233]/40 scale-90 grayscale' // <- AQUÍ MEJORAMOS EL CONTRASTE OSCURECIENDO
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
           </div>
         </nav>
 
