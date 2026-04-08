@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react"; // Añadimos useCallback
 import { supabase } from "@/lib/supabase";
 import { useCart } from "@/context/CartContext";
-// Importamos los mismos componentes que usa la original
+import { getDetailedStoreStatus } from "@/lib/store-logic"; // IMPORTANTE: La lógica de cierre
+
 import FloatingActions from "@/components/FloatingActions";
 import MarketingPopup from "@/components/MarketingPopup";
 import ProductModal from "@/components/ProductModal";
@@ -15,72 +16,97 @@ export default function TiendaCeluPage() {
   const [isMobile, setIsMobile] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   
-  // Estados de datos (copiados de la original)
+  // ESTADOS DE TIENDA
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
+  const [config, setConfig] = useState<any>(null); // Guardamos la config para el Realtime
+  const [isStoreClosed, setIsStoreClosed] = useState(false); // El "candado"
   const [activeCategory, setActiveCategory] = useState("Todas");
+  
   const { cart, addToCart, openCart, cartFlash } = useCart();
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
+
+  // Función para calcular si está abierto o cerrado
+  const refreshStoreStatus = useCallback(async (currentConfig: any) => {
+    const status = await getDetailedStoreStatus(currentConfig);
+    setIsStoreClosed(!status.isOpen);
+  }, []);
 
   useEffect(() => {
     setIsMounted(true);
     
-    // DETECTOR DE PANTALLA
-    const checkDevice = () => {
-      setIsMobile(window.innerWidth < 1024);
-    };
-    
+    const checkDevice = () => setIsMobile(window.innerWidth < 1024);
     checkDevice();
     window.addEventListener("resize", checkDevice);
 
     async function fetchData() {
+      // 1. Cargar datos básicos
       const { data: cats } = await supabase.from('categories').select('*').order('name');
       const { data: prods } = await supabase.from('products').select('*').eq('is_visible', true).order('name');
+      const { data: conf } = await supabase.from('store_config').select('*').single();
+      
       if (cats) setCategories([{ id: 'all', name: 'Todas' }, ...cats]);
       if (prods) setProducts(prods);
+      
+      // 2. Validar apertura inicial
+      if (conf) {
+        setConfig(conf);
+        await refreshStoreStatus(conf);
+      }
     }
     fetchData();
 
-    return () => window.removeEventListener("resize", checkDevice);
-  }, []);
+    // 3. ESCUCHA REALTIME (Para que si Su cierra la tienda, el celu reaccione al instante)
+    const configChannel = supabase.channel('store-updates-celu')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'store_config' }, 
+        async (payload: any) => {
+          const newConfig = payload.new;
+          setConfig(newConfig);
+          await refreshStoreStatus(newConfig);
+        }
+      ).subscribe();
+
+    return () => {
+      window.removeEventListener("resize", checkDevice);
+      supabase.removeChannel(configChannel);
+    };
+  }, [refreshStoreStatus]);
 
   if (!isMounted) return null;
 
-  // SI DETECTA ESCRITORIO: Muestra solo un aviso limpio
+  // Pantalla de bloqueo para escritorio (Tu detector)
   if (!isMobile) {
     return (
       <div className="h-screen flex flex-col items-center justify-center bg-[#FDFBF7] p-10 text-center">
         <h1 className="font-diner text-6xl text-[#2B4233] mb-4">TP</h1>
-        <p className="font-josefin uppercase tracking-widest text-gray-400">
-          Estás en modo escritorio. <br /> 
-          Abrí esta URL desde un celular para probar el diseño.
-        </p>
+        <p className="font-josefin uppercase tracking-widest text-gray-400">Modo Escritorio Activo</p>
       </div>
     );
   }
 
-  // SI DETECTA CELULAR: Aquí empezamos a construir el diseño "Boutique Mobile"
   return (
     <div className="flex flex-col h-screen bg-[#FDFBF7] text-[#2B4233] font-josefin overflow-hidden relative">
       
-      {/* Componentes globales compartidos */}
-      <CartDrawer />
+      {/* Pasamos isDisabled a los modales */}
       <ProductModal 
         isOpen={!!selectedProduct} 
         product={selectedProduct} 
         onClose={() => setSelectedProduct(null)} 
         onAddToCart={(p: any) => { addToCart(p); openCart(); }} 
-        allProducts={products} 
+        allProducts={products}
+        isDisabled={isStoreClosed} 
       />
 
-      {/* HEADER CELULAR: 25% de la pantalla para dejar aire */}
+      {config && <CartDrawer storeStatus={{ ...config, isClosed: isStoreClosed }} />}
+
       <header className="flex-none h-[25vh] bg-[#5E7361] flex flex-col justify-between p-4 shadow-md z-20">
         <div className="flex-1 flex flex-col justify-center text-center">
           <h1 className="text-3xl font-diner uppercase text-white leading-none">Tyta Patisserie</h1>
           <p className="text-[10px] tracking-[0.4em] text-white/70 uppercase mt-1">by Su Fernandez</p>
+          {/* SEMÁFORO VISUAL OPCIONAL */}
+          <div className={`mx-auto mt-2 w-2 h-2 rounded-full ${isStoreClosed ? 'bg-red-500' : 'bg-green-500'} animate-pulse`} />
         </div>
 
-        {/* NAVEGACIÓN MOBILE: Scroll lateral infinito para que no ocupe más de una línea */}
         <nav className="w-full flex flex-nowrap overflow-x-auto no-scrollbar gap-2 pb-2">
           {categories.map((cat) => (
             <button 
@@ -96,7 +122,6 @@ export default function TiendaCeluPage() {
         </nav>
       </header>
 
-      {/* MAIN MOBILE: Grilla de 2 columnas */}
       <main className="flex-1 overflow-y-auto bg-white px-4 py-6">
         <div className="grid grid-cols-2 gap-4 pb-32">
           {products
@@ -105,7 +130,8 @@ export default function TiendaCeluPage() {
               <ProductCard 
                 key={product.id} 
                 product={product} 
-                onOpenDetail={() => setSelectedProduct(product)} 
+                onOpenDetail={() => setSelectedProduct(product)}
+                isDisabled={isStoreClosed} // BLOQUEO DE PRODUCTO
               />
             ))
           }
