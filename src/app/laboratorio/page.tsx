@@ -76,7 +76,7 @@ export default function TiendaPage() {
     ...categories.filter(cat => cat.is_on_gallery !== false)
   ];
 
-  // LÓGICA DE INFINITO PARA CATEGORÍAS (Igual a la del Admin)
+  // LÓGICA DE INFINITO PARA CATEGORÍAS
   const infiniteCategories = [...visibleCategories, ...visibleCategories, ...visibleCategories];
 
   useEffect(() => {
@@ -122,10 +122,9 @@ export default function TiendaPage() {
         {/* NAVEGACIÓN DUAL */}
         <nav className="w-full relative">
           {isMobile ? (
-            /* VISTA CELULAR: RUEDA INFINITA */
+            /* VISTA CELULAR: RUEDA INFINITA (SIN FADE) */
             <div className="relative py-2 overflow-hidden">
-              <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[#5E7361] to-transparent z-10 pointer-events-none" />
-              <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[#5E7361] to-transparent z-10 pointer-events-none" />
+              {/* Degradados eliminados de aquí */}
               
               <div 
                 ref={scrollRef}
@@ -143,7 +142,7 @@ export default function TiendaPage() {
                       className={`snap-center flex-none px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 ${
                         isActive && isMiddleRange
                         ? 'bg-[#EDB2D1] text-[#2B4233] scale-110 shadow-lg' 
-                        : 'text-white/40 scale-90'
+                        : 'text-white/40 scale-90' // Contraste nítido
                       }`}
                     >
                       {cat.name}
