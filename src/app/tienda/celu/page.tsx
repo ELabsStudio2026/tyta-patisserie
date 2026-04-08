@@ -99,28 +99,33 @@ export default function TiendaCeluPage() {
 
       {config && <CartDrawer storeStatus={{ ...config, isClosed: isStoreClosed }} />}
 
-      <header className="flex-none h-[25vh] bg-[#5E7361] flex flex-col justify-between p-4 shadow-md z-20">
-        <div className="flex-1 flex flex-col justify-center text-center">
-          <h1 className="text-3xl font-diner uppercase text-white leading-none">Tyta Patisserie</h1>
-          <p className="text-[10px] tracking-[0.4em] text-white/70 uppercase mt-1">by Su Fernandez</p>
-          {/* SEMÁFORO VISUAL OPCIONAL */}
-          <div className={`mx-auto mt-2 w-2 h-2 rounded-full ${isStoreClosed ? 'bg-red-500' : 'bg-green-500'} animate-pulse`} />
-        </div>
+      {/* HEADER CELULAR: 25% de la pantalla - SIN EL PUNTO DE ESTADO */}
+<header className="flex-none h-[25vh] bg-[#5E7361] flex flex-col justify-between p-4 shadow-md z-20">
+  <div className="flex-1 flex flex-col justify-center text-center">
+    <h1 className="text-3xl font-diner uppercase text-white leading-none">
+      Tyta Patisserie
+    </h1>
+    <p className="text-[10px] tracking-[0.4em] text-white/70 uppercase mt-1">
+      by Su Fernandez
+    </p>
+    {/* El div del semáforo fue eliminado de aquí */}
+  </div>
 
-        <nav className="w-full flex flex-nowrap overflow-x-auto no-scrollbar gap-2 pb-2">
-          {categories.map((cat) => (
-            <button 
-              key={cat.id} 
-              onClick={() => setActiveCategory(cat.name)}
-              className={`flex-none px-4 py-2 rounded-full text-[9px] font-black uppercase transition-all ${
-                activeCategory === cat.name ? 'bg-[#EDB2D1] text-[#2B4233]' : 'bg-white text-[#2B4233]'
-              }`}
-            >
-              {cat.name}
-            </button>
-          ))}
-        </nav>
-      </header>
+  {/* NAVEGACIÓN MOBILE: Se mantiene igual porque dijiste que se veía perfecto */}
+  <nav className="w-full flex flex-nowrap overflow-x-auto no-scrollbar gap-2 pb-2">
+    {categories.map((cat) => (
+      <button 
+        key={cat.id} 
+        onClick={() => setActiveCategory(cat.name)}
+        className={`flex-none px-4 py-2 rounded-full text-[9px] font-black uppercase transition-all ${
+          activeCategory === cat.name ? 'bg-[#EDB2D1] text-[#2B4233]' : 'bg-white text-[#2B4233]'
+        }`}
+      >
+        {cat.name}
+      </button>
+    ))}
+  </nav>
+</header>
 
       <main className="flex-1 overflow-y-auto bg-white px-4 py-6">
         <div className="grid grid-cols-2 gap-4 pb-32">
