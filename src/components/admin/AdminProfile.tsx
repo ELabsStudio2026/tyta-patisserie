@@ -4,101 +4,113 @@ import { supabase } from "@/lib/supabase";
 
 export default function AdminProfile() {
   const [horarios, setHorarios] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchHorarios() {
-      try {
-        // Conexión a la tabla real de expansión multitienda
-        const { data, error } = await supabase
-          .from('horarios_tienda_online')
-          .select('*')
-          .order('dia_semana', { ascending: true });
-        
-        if (data) setHorarios(data);
-      } catch (err) {
-        console.error("Error cargando horarios:", err);
-      } finally {
-        setLoading(false);
-      }
-    }
     fetchHorarios();
   }, []);
 
-  const handleUpdateDay = async (diaId: number, camposActualizados: any) => {
+  async function fetchHorarios() {
+    const { data, error } = await supabase
+      .from("horarios")
+      .select("*")
+      .order("id", { ascending: true });
+    
+    if (error) {
+      console.error("Error cargando horarios:", error);
+      return;
+    }
+    if (data) setHorarios(data);
+  }
+
+  const handleUpdate = async (id: number, field: string, value: string) => {
     const { error } = await supabase
-      .from('horarios_tienda_online')
-      .update(camposActualizados)
-      .eq('id', diaId);
+      .from("horarios")
+      .update({ [field]: value })
+      .eq("id", id);
     
     if (!error) {
-      setHorarios(horarios.map(h => h.id === diaId ? { ...h, ...camposActualizados } : h));
+      // Actualización optimista en el estado local para mayor fluidez
+      setHorarios(prev => prev.map(h => h.id === id ? { ...h, [field]: value } : h));
+    } else {
+      console.error("Error al actualizar:", error);
     }
   };
 
-  if (loading) return <div className="flex justify-center py-20 font-diner text-2xl opacity-20 italic">Sincronizando con Tienda Online...</div>;
-
   return (
-    <div className="max-w-4xl mx-auto px-2 sm:px-0 space-y-6 pb-24 animate-in fade-in duration-500">
-      
-      <div className="text-center sm:text-left mb-8 bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
-        <h3 className="font-diner text-3xl sm:text-4xl text-[#2B4233] uppercase tracking-tighter">Horarios Operativos</h3>
-        <p className="text-[9px] font-black uppercase tracking-widest text-[#EDB2D1]">Tabla: horarios_tienda_online • Gestión Multiturno</p>
-      </div>
+    <div className="max-w-[1400px] mx-auto animate-in fade-in duration-500 px-2 sm:px-4">
+      <header className="mb-8 mt-4 text-center sm:text-left">
+        <h2 className="font-diner text-4xl md:text-5xl text-[#2B4233] uppercase leading-none">
+          Horarios de Boutique
+        </h2>
+        <p className="font-josefin text-[10px] uppercase tracking-[0.3em] text-[#EDB2D1] mt-2 font-black">
+          Configuración de disponibilidad semanal
+        </p>
+      </header>
 
-      {/* LISTA DE DÍAS (Mobile First: Cards verticales) */}
-      // Dentro de tu componente de gestión de horarios (AdminProfile)
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
+        {horarios.map((h) => (
+          <div 
+            key={h.id} 
+            className="bg-white rounded-[2.5rem] p-6 shadow-sm border border-[#EDB2D1]/10 flex flex-col gap-5 hover:shadow-md transition-shadow"
+          >
+            {/* CABECERA DEL DÍA */}
+            <div className="flex justify-between items-center border-b border-gray-50 pb-4">
+              <h3 className="font-diner text-3xl uppercase text-[#2B4233] leading-none tracking-tight">
+                {h.dia}
+              </h3>
+              <div className="flex items-center gap-2 bg-[#FDFBF7] px-3 py-1 rounded-full border border-gray-100">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                <span className="text-[7px] font-black uppercase tracking-widest text-[#2B4233]">Activo</span>
+              </div>
+            </div>
 
-<div className="grid grid-cols-1 gap-4">
-  {diasSemana.map((dia) => (
-    <div key={dia} className="bg-white rounded-[2rem] p-5 shadow-sm border border-gray-50 flex flex-col gap-3">
-      
-      {/* CABECERA COMPACTA */}
-      <div className="flex justify-between items-center border-b border-gray-50 pb-2">
-        <h3 className="font-diner text-2xl uppercase text-[#2B4233] leading-none">
-          {dia}
-        </h3>
-        <button className="bg-[#FDFBF7] px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest text-[#2B4233] border border-gray-100">
-          Operativo
-        </button>
-      </div>
+            {/* GRILLA COMPACTA DE INPUTS */}
+            <div className="grid grid-cols-2 gap-x-4 gap-y-5">
+              {/* TURNO MAÑANA */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[7px] uppercase tracking-[0.2em] text-gray-400 font-black ml-2">Apertura AM</label>
+                <input 
+                  type="time" 
+                  value={h.apertura_am || "09:00"} 
+                  onChange={(e) => handleUpdate(h.id, 'apertura_am', e.target.value)}
+                  className="w-full bg-[#FDFBF7] border border-gray-100 rounded-2xl px-4 py-3 text-[13px] font-bold outline-none focus:border-[#EDB2D1] text-[#2B4233] transition-all"
+                />
+              </div>
+              
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[7px] uppercase tracking-[0.2em] text-gray-400 font-black ml-2">Cierre AM</label>
+                <input 
+                  type="time" 
+                  value={h.cierre_am || "13:00"} 
+                  onChange={(e) => handleUpdate(h.id, 'cierre_am', e.target.value)}
+                  className="w-full bg-[#FDFBF7] border border-gray-100 rounded-2xl px-4 py-3 text-[13px] font-bold outline-none focus:border-[#EDB2D1] text-[#2B4233] transition-all"
+                />
+              </div>
 
-      {/* CONTROLES COMPACTOS EN GRILLA */}
-      <div className="grid grid-cols-2 gap-x-4 gap-y-3">
-        
-        {/* TURNO MAÑANA */}
-        <div className="space-y-1">
-          <label className="text-[7px] uppercase tracking-[0.2em] text-gray-400 font-black ml-2">Apertura AM</label>
-          <select className="w-full bg-[#FDFBF7] border border-gray-100 rounded-xl px-3 py-2 text-[11px] outline-none focus:border-[#EDB2D1]">
-            <option>9:00 a.m.</option>
-          </select>
-        </div>
-        
-        <div className="space-y-1">
-          <label className="text-[7px] uppercase tracking-[0.2em] text-gray-400 font-black ml-2">Cierre AM</label>
-          <select className="w-full bg-[#FDFBF7] border border-gray-100 rounded-xl px-3 py-2 text-[11px] outline-none focus:border-[#EDB2D1]">
-            <option>1:00 p.m.</option>
-          </select>
-        </div>
-
-        {/* TURNO TARDE */}
-        <div className="space-y-1">
-          <label className="text-[7px] uppercase tracking-[0.2em] text-gray-400 font-black ml-2">Apertura PM</label>
-          <select className="w-full bg-[#FDFBF7] border border-gray-100 rounded-xl px-3 py-2 text-[11px] outline-none focus:border-[#EDB2D1]">
-            <option>1:00 p.m.</option>
-          </select>
-        </div>
-        
-        <div className="space-y-1">
-          <label className="text-[7px] uppercase tracking-[0.2em] text-gray-400 font-black ml-2">Cierre PM</label>
-          <select className="w-full bg-[#FDFBF7] border border-gray-100 rounded-xl px-3 py-2 text-[11px] outline-none focus:border-[#EDB2D1]">
-            <option>6:00 p.m.</option>
-          </select>
-        </div>
-
+              {/* TURNO TARDE */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[7px] uppercase tracking-[0.2em] text-gray-400 font-black ml-2">Apertura PM</label>
+                <input 
+                  type="time" 
+                  value={h.apertura_pm || "16:00"} 
+                  onChange={(e) => handleUpdate(h.id, 'apertura_pm', e.target.value)}
+                  className="w-full bg-[#FDFBF7] border border-gray-100 rounded-2xl px-4 py-3 text-[13px] font-bold outline-none focus:border-[#EDB2D1] text-[#2B4233] transition-all"
+                />
+              </div>
+              
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[7px] uppercase tracking-[0.2em] text-gray-400 font-black ml-2">Cierre PM</label>
+                <input 
+                  type="time" 
+                  value={h.cierre_pm || "20:00"} 
+                  onChange={(e) => handleUpdate(h.id, 'cierre_pm', e.target.value)}
+                  className="w-full bg-[#FDFBF7] border border-gray-100 rounded-2xl px-4 py-3 text-[13px] font-bold outline-none focus:border-[#EDB2D1] text-[#2B4233] transition-all"
+                />
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
-  ))}
-</div>
   );
 }
