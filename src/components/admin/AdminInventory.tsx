@@ -243,7 +243,6 @@ export default function AdminInventory({ products, categories, onEdit, onDelete,
       {/* --- ESTA PARTE ES LA QUE HACÍA QUE NO FUNCIONE --- */}
       <TytaAlert 
         alert={alert} 
-        onConfirm={alert?.onConfirm} 
         onCancel={closeAlert} 
       />
     </div>
