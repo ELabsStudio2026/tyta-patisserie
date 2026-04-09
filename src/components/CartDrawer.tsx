@@ -110,7 +110,7 @@ export default function CartDrawer({ storeStatus }: any) {
       
       <div className="relative w-full max-w-md bg-[#FDFBF7] h-full shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-right duration-500">
         
-        {/* HEADER - X EN TAMAÑO 5XL Y VACIAR A SU IZQUIERDA */}
+        {/* HEADER */}
         <div className="p-6 border-b border-[#EDB2D1]/10 bg-white flex justify-between items-center flex-none">
           <h2 className="font-diner text-4xl uppercase leading-none tracking-tighter text-[#2B4233]">
             {checkoutStep === 0 ? "Tu Pedido" : "Tus Datos"}
@@ -138,25 +138,49 @@ export default function CartDrawer({ storeStatus }: any) {
         {/* CONTENIDO */}
         <div className="flex-1 overflow-y-auto p-8 scrollbar-hide">
           {checkoutStep === 0 && (
-            <div className="space-y-6">
-              {cart.map((item) => (
-                <div key={item.id} className="flex gap-4 items-center animate-in fade-in duration-300">
-                  <img src={item.image_url} className="w-14 h-14 rounded-full object-cover border border-[#EDB2D1]/10 shadow-sm" alt={item.name} />
-                  <div className="flex-1">
-                    <h4 className="font-bold text-[10px] uppercase">{item.name}</h4>
-                    <div className="flex items-center gap-3 mt-2 bg-white px-2 py-1 rounded-full border border-gray-100 w-fit shadow-sm">
-                      <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="text-[#EDB2D1] font-bold px-1">-</button>
-                      <span className="text-[10px] font-black w-4 text-center">{item.quantity}</span>
-                      <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="text-[#EDB2D1] font-bold px-1">+</button>
+            <div className="h-full">
+              {cart.length > 0 ? (
+                <div className="space-y-6">
+                  {cart.map((item) => (
+                    <div key={item.id} className="flex gap-4 items-center animate-in fade-in duration-300">
+                      <img src={item.image_url} className="w-14 h-14 rounded-full object-cover border border-[#EDB2D1]/10 shadow-sm" alt={item.name} />
+                      <div className="flex-1">
+                        <h4 className="font-bold text-[10px] uppercase">{item.name}</h4>
+                        <div className="flex items-center gap-3 mt-2 bg-white px-2 py-1 rounded-full border border-gray-100 w-fit shadow-sm">
+                          <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="text-[#EDB2D1] font-bold px-1">-</button>
+                          <span className="text-[10px] font-black w-4 text-center">{item.quantity}</span>
+                          <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="text-[#EDB2D1] font-bold px-1">+</button>
+                        </div>
+                      </div>
+                      <span className="font-mono text-[10px] font-bold opacity-30">${((item.price * item.quantity) / 100).toLocaleString('es-AR')}</span>
                     </div>
-                  </div>
-                  <span className="font-mono text-[10px] font-bold opacity-30">${((item.price * item.quantity) / 100).toLocaleString('es-AR')}</span>
+                  ))}
                 </div>
-              ))}
-              {cart.length === 0 && (
-                <div className="h-full flex flex-col items-center justify-center opacity-30 pt-20">
-                  <span className="text-4xl mb-4">🧁</span>
-                  <p className="uppercase text-[9px] font-black tracking-widest">Bolsa vacía</p>
+              ) : (
+                <div className="h-full flex flex-col items-center justify-center animate-in fade-in zoom-in duration-700">
+                  {/* LOGO BOLSA TYTA - EFECTO FONDO DE AGUA */}
+                  <div className="relative mb-6">
+                    <div className="absolute inset-0 bg-[#EDB2D1] rounded-full blur-3xl opacity-10 animate-pulse" />
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      className="h-24 w-24 text-[#EDB2D1] opacity-20 relative z-10" 
+                      fill="none" 
+                      viewBox="0 0 24 24" 
+                      stroke="currentColor"
+                    >
+                      <path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth={1.2} 
+                        d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" 
+                      />
+                    </svg>
+                  </div>
+                  
+                  <p className="uppercase text-[10px] font-black tracking-[0.3em] text-[#2B4233]/30">
+                    Tu bolsa está vacía
+                  </p>
+                  <div className="mt-4 w-8 h-[1px] bg-[#EDB2D1]/20" />
                 </div>
               )}
             </div>
