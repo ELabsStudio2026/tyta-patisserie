@@ -100,6 +100,7 @@ export default function AdminPage() {
             products={products} 
             categories={categories} 
             onEdit={setEditingProduct} 
+            onRefresh={fetchInitialData} // <--- ESTA LÍNEA ARREGLA EL ERROR DE VERCEL
             onDelete={(id) => { 
               // REEMPLAZO DEL CONFIRM NATIVO POR TYTA ALERT (Binario)
               showAlert(
