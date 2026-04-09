@@ -93,19 +93,56 @@ export default function ProductAdminModal({
               <img src={productForm.image_url || "/images/placeholder.jpg"} className="w-20 h-20 rounded-2xl object-cover mb-2 border-2 border-white shadow-md" />
               
               <CldUploadWidget 
-                uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET} 
-                onSuccess={(res: any) => {
-                  if (res.event === "success") {
-                    handleChange((prev: any) => ({ ...prev, image_url: res.info.secure_url }));
-                  }
-                }}
-              >
-                {({ open }) => ( 
-                  <button type="button" onClick={() => open()} className="px-4 py-1.5 bg-[#2B4233] text-[#EDB2D1] rounded-full text-[8px] font-black uppercase tracking-widest cursor-pointer">
-                    {productForm.image_url ? "📸 Cambiar Foto" : "📸 Cargar Foto"}
-                  </button> 
-                )}
-              </CldUploadWidget>
+  uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET} 
+  options={{
+    maxFiles: 1,
+    multiple: false,
+    resourceType: "image",
+    clientAllowedFormats: ["jpg", "png", "webp", "jpeg"], // Formatos permitidos
+    sources: ["local", "url", "camera"], // 'local' es la clave para la galería
+    language: "es", // Para que los botones digan "Subir" en vez de "Upload"
+    textConfig: {
+      es: {
+        local: {
+          browse: "Buscar en Galería", // Personalizamos el botón para que sea claro
+          dd_title_single: "Arrastrá tu delicia aquí"
+        }
+      }
+    },
+    styles: {
+      palette: {
+        window: "#FDFBF7",
+        sourceBg: "#FFFFFF",
+        windowBorder: "#EDB2D1",
+        tabIcon: "#2B4233",
+        inactiveTabIcon: "#2B4233/50",
+        menuIcons: "#2B4233",
+        link: "#EDB2D1",
+        action: "#2B4233",
+        inProgress: "#EDB2D1",
+        complete: "#2B4233",
+        error: "#c0392b",
+        textDark: "#2B4233",
+        textLight: "#FFFFFF"
+      }
+    }
+  }}
+  onSuccess={(res: any) => {
+    if (res.event === "success") {
+      handleChange((prev: any) => ({ ...prev, image_url: res.info.secure_url }));
+    }
+  }}
+>
+  {({ open }) => ( 
+    <button 
+      type="button" 
+      onClick={() => open()} 
+      className="px-4 py-1.5 bg-[#2B4233] text-[#EDB2D1] rounded-full text-[8px] font-black uppercase tracking-widest cursor-pointer"
+    >
+      {productForm.image_url ? "📸 Cambiar Foto" : "📸 Cargar Foto"}
+    </button> 
+  )}
+</CldUploadWidget>
               
               <div className="flex items-center gap-2 mt-3 bg-white px-4 py-1.5 rounded-full border border-gray-100 shadow-sm cursor-pointer">
                 <input 
