@@ -102,14 +102,32 @@ export default function ProductAdminModal({
               <CldUploadWidget 
                 uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET} 
                 options={{
-                  maxFiles: 1,
-                  multiple: false,
-                  resourceType: "image",
-                  clientAllowedFormats: ["jpg", "png", "webp", "jpeg"],
-                  sources: ["local", "camera", "url"],
-                  language: "es",
-                  styles: { palette: { window: "#FDFBF7", sourceBg: "#FFFFFF", windowBorder: "#EDB2D1", tabIcon: "#2B4233", menuIcons: "#2B4233", textDark: "#2B4233" } }
-                }}
+  maxFiles: 1,
+  multiple: false,
+  resourceType: "image",
+  clientAllowedFormats: ["jpg", "png", "webp", "jpeg", "heic"], 
+  maxImageFileSize: 20000000, // 20MB - Para total libertad de alta resolución
+  sources: ["local", "camera", "url"],
+  language: "es",
+  cropping: false, 
+  styles: {
+    palette: {
+      window: "#FDFBF7",
+      sourceBg: "#FFFFFF",
+      windowBorder: "#EDB2D1",
+      tabIcon: "#2B4233",
+      inactiveTabIcon: "#2B423366",
+      menuIcons: "#2B4233",
+      link: "#EDB2D1",
+      action: "#2B4233",
+      inProgress: "#EDB2D1",
+      complete: "#2B4233",
+      error: "#c0392b",
+      textDark: "#2B4233",
+      textLight: "#FFFFFF"
+    }
+  }
+}}
                 onSuccess={(res: any) => {
                   if (res.event === "success") {
                     handleChange((prev: any) => ({ ...prev, image_url: res.info.secure_url }));
