@@ -13,7 +13,6 @@ export default function ProductAdminModal({
   const { alert, showAlert, closeAlert } = useTytaAlert();
   const [isDirty, setIsDirty] = useState(false);
 
-  // Resetear el interruptor cada vez que el modal se abre/cambia de producto
   useEffect(() => {
     if (isAdding || editingProduct) {
       setIsDirty(false);
@@ -22,13 +21,15 @@ export default function ProductAdminModal({
 
   if (!isAdding && !editingProduct) return null;
 
-  // Manejador de cambios que activa el interruptor de seguridad
   const handleChange = (updater: any) => {
-    setProductForm(updater);
+    if (typeof updater === 'function') {
+      setProductForm(updater);
+    } else {
+      setProductForm(updater);
+    }
     setIsDirty(true);
   };
 
-  // Función de cierre con validación Tyta
   const handleRequestClose = () => {
     if (isDirty) {
       showAlert(
@@ -46,11 +47,10 @@ export default function ProductAdminModal({
   };
 
   const handleSave = (e: any) => {
-    setIsDirty(false); // Apagamos el interruptor para que guarde sin chillar
+    setIsDirty(false);
     onSave(e);
   };
 
-  // --- LÓGICA DE FORMATEO Y CÁLCULOS ---
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('es-AR').format(Math.floor(value / 100) || 0);
   };
@@ -67,7 +67,6 @@ export default function ProductAdminModal({
         
         <div className="relative w-full max-w-sm bg-white shadow-2xl border-l-8 border-[#EDB2D1] flex flex-col h-full overflow-hidden">
           
-          {/* CABECERA */}
           <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-white flex-none">
             <h2 className="text-xl font-diner uppercase">
               {editingProduct ? 'Editar Producto' : 'Nuevo Producto'}
@@ -75,10 +74,9 @@ export default function ProductAdminModal({
             <button onClick={handleRequestClose} className="text-gray-300 hover:text-[#2B4233] font-bold text-4xl p-1 cursor-pointer leading-none">×</button>
           </div>
           
-          {/* CUERPO CON SCROLL */}
           <div className="flex-1 overflow-y-auto p-5 space-y-5 custom-scrollbar bg-[#FDFBF7]/30 pb-24">
             
-            {/* SECCIÓN FOTO */}
+            {/* SECCIÓN FOTO - CONFIGURADA PARA GALERÍA */}
             <div className="flex flex-col items-center p-4 border-2 border-dashed border-[#EDB2D1]/20 rounded-[2rem] bg-white shadow-sm relative">
               {productForm.image_url && (
                 <button 
@@ -90,59 +88,47 @@ export default function ProductAdminModal({
                 </button>
               )}
 
-              <img src={productForm.image_url || "/images/placeholder.jpg"} className="w-20 h-20 rounded-2xl object-cover mb-2 border-2 border-white shadow-md" />
+              <img src={productForm.image_url || "/images/placeholder.jpg"} className="w-20 h-20 rounded-2xl object-cover mb-2 border-2 border-white shadow-md" alt="Preview" />
               
               <CldUploadWidget 
-  uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET} 
-  options={{
-    maxFiles: 1,
-    multiple: false,
-    resourceType: "image",
-    clientAllowedFormats: ["jpg", "png", "webp", "jpeg"], // Formatos permitidos
-    sources: ["local", "url", "camera"], // 'local' es la clave para la galería
-    language: "es", // Para que los botones digan "Subir" en vez de "Upload"
-    textConfig: {
-      es: {
-        local: {
-          browse: "Buscar en Galería", // Personalizamos el botón para que sea claro
-          dd_title_single: "Arrastrá tu delicia aquí"
-        }
-      }
-    },
-    styles: {
-      palette: {
-        window: "#FDFBF7",
-        sourceBg: "#FFFFFF",
-        windowBorder: "#EDB2D1",
-        tabIcon: "#2B4233",
-        inactiveTabIcon: "#2B4233/50",
-        menuIcons: "#2B4233",
-        link: "#EDB2D1",
-        action: "#2B4233",
-        inProgress: "#EDB2D1",
-        complete: "#2B4233",
-        error: "#c0392b",
-        textDark: "#2B4233",
-        textLight: "#FFFFFF"
-      }
-    }
-  }}
-  onSuccess={(res: any) => {
-    if (res.event === "success") {
-      handleChange((prev: any) => ({ ...prev, image_url: res.info.secure_url }));
-    }
-  }}
->
-  {({ open }) => ( 
-    <button 
-      type="button" 
-      onClick={() => open()} 
-      className="px-4 py-1.5 bg-[#2B4233] text-[#EDB2D1] rounded-full text-[8px] font-black uppercase tracking-widest cursor-pointer"
-    >
-      {productForm.image_url ? "📸 Cambiar Foto" : "📸 Cargar Foto"}
-    </button> 
-  )}
-</CldUploadWidget>
+                uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET} 
+                options={{
+                  maxFiles: 1,
+                  multiple: false,
+                  resourceType: "image",
+                  clientAllowedFormats: ["jpg", "png", "webp", "jpeg"],
+                  sources: ["local", "camera", "url"], // 'local' primero habilita la galería/archivos en móvil
+                  language: "es",
+                  styles: {
+                    palette: {
+                      window: "#FDFBF7",
+                      sourceBg: "#FFFFFF",
+                      windowBorder: "#EDB2D1",
+                      tabIcon: "#2B4233",
+                      inactiveTabIcon: "#2B423366",
+                      menuIcons: "#2B4233",
+                      link: "#EDB2D1",
+                      action: "#2B4233",
+                      inProgress: "#EDB2D1",
+                      complete: "#2B4233",
+                      error: "#c0392b",
+                      textDark: "#2B4233",
+                      textLight: "#FFFFFF"
+                    }
+                  }
+                }}
+                onSuccess={(res: any) => {
+                  if (res.event === "success") {
+                    handleChange((prev: any) => ({ ...prev, image_url: res.info.secure_url }));
+                  }
+                }}
+              >
+                {({ open }) => ( 
+                  <button type="button" onClick={() => open()} className="px-4 py-1.5 bg-[#2B4233] text-[#EDB2D1] rounded-full text-[8px] font-black uppercase tracking-widest cursor-pointer hover:scale-105 transition-transform">
+                    {productForm.image_url ? "📸 Cambiar Foto" : "📸 Cargar Foto"}
+                  </button> 
+                )}
+              </CldUploadWidget>
               
               <div className="flex items-center gap-2 mt-3 bg-white px-4 py-1.5 rounded-full border border-gray-100 shadow-sm cursor-pointer">
                 <input 
@@ -204,7 +190,6 @@ export default function ProductAdminModal({
                 </div>
               </div>
 
-              {/* RENTABILIDAD */}
               {costo > 0 && (
                 <div className="flex items-center justify-between px-4 py-2 bg-[#2B4233]/5 rounded-xl border border-[#2B4233]/10">
                   <div className="flex flex-col">
@@ -238,7 +223,6 @@ export default function ProductAdminModal({
             </div>
           </div>
 
-          {/* PIE DE MODAL FIJO */}
           <div className="p-5 border-t border-gray-100 bg-white flex-none">
             <button onClick={handleSave} className="w-full py-4 bg-[#EDB2D1] text-white rounded-full font-black uppercase tracking-widest text-[10px] shadow-lg active:scale-95 transition-all">
               Guardar Cambios
