@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { useCart } from "@/context/CartContext";
 import { getDetailedStoreStatus } from "@/lib/store-logic";
@@ -27,6 +27,9 @@ export default function TiendaPage() {
   const [showMarketingPopup, setShowMarketingPopup] = useState(false);
   const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
   const [showTopButton, setShowTopButton] = useState(false);
+
+  // REF para el scroll infinito de categorías
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const refreshStoreStatus = useCallback(async (currentConfig: any) => {
     const status = await getDetailedStoreStatus(currentConfig);
@@ -67,11 +70,32 @@ export default function TiendaPage() {
     };
   }, [refreshStoreStatus]);
 
-  // FILTRO EDITORIAL: Susana tiene el control total
+  // FILTRO EDITORIAL
   const visibleCategories = [
     { id: 'all', name: 'Todas' },
     ...categories.filter(cat => cat.is_on_gallery !== false)
   ];
+
+  // LÓGICA DE INFINITO PARA CATEGORÍAS
+  const infiniteCategories = [...visibleCategories, ...visibleCategories, ...visibleCategories];
+
+  useEffect(() => {
+    if (isMobile && scrollRef.current) {
+      const container = scrollRef.current;
+      const activeElement = container.querySelector(`[data-active="true"]`);
+      if (activeElement) {
+        const scrollLeft = (activeElement as HTMLElement).offsetLeft - (container.offsetWidth / 2) + (activeElement as HTMLElement).offsetWidth / 2;
+        container.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+      }
+    }
+  }, [activeCategory, isMobile, loading]);
+
+  const handleInfiniteScroll = () => {
+    if (!scrollRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+    if (scrollLeft + clientWidth >= scrollWidth - 10) scrollRef.current.scrollLeft = scrollWidth / 3;
+    if (scrollLeft <= 10) scrollRef.current.scrollLeft = scrollWidth / 3;
+  };
 
   if (!isMounted) return null;
 
@@ -94,18 +118,57 @@ export default function TiendaPage() {
           <h1 className={`${isMobile ? 'text-3xl' : 'text-6xl'} font-diner uppercase text-white leading-none`}>Tyta Patisserie</h1>
           <p className="text-[10px] tracking-[0.4em] text-white/70 uppercase mt-1">by Su Fernandez</p>
         </div>
-        <nav className={`w-full flex ${isMobile ? 'flex-nowrap overflow-x-auto no-scrollbar gap-2' : 'flex-wrap justify-center gap-1.5'} pb-2`}>
-          {visibleCategories.map((cat) => (
-            <button 
-              key={cat.id} 
-              onClick={() => setActiveCategory(cat.name)} 
-              className={`flex-none px-4 py-2 rounded-full text-[9px] font-black uppercase transition-all ${
-                activeCategory === cat.name ? 'bg-[#EDB2D1] text-[#2B4233]' : 'bg-white text-[#2B4233]'
-              }`}
-            >
-              {cat.name}
-            </button>
-          ))}
+
+        {/* NAVEGACIÓN DUAL */}
+        <nav className="w-full relative">
+          {isMobile ? (
+            /* VISTA CELULAR: RUEDA INFINITA (SIN FADE) */
+            <div className="relative py-2 overflow-hidden">
+              {/* Degradados eliminados de aquí */}
+              
+              <div 
+                ref={scrollRef}
+                onScroll={handleInfiniteScroll}
+                className="flex gap-4 overflow-x-auto no-scrollbar snap-x snap-mandatory px-32"
+              >
+                {infiniteCategories.map((cat, index) => {
+                  const isActive = activeCategory === cat.name;
+                  const isMiddleRange = index >= visibleCategories.length && index < visibleCategories.length * 2;
+                  return (
+                    <button 
+                      key={`${cat.id}-${index}`}
+                      data-active={isActive && isMiddleRange}
+                      onClick={() => setActiveCategory(cat.name)}
+                      className={`snap-center flex-none px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 ${
+                        isActive && isMiddleRange
+                        ? 'bg-[#EDB2D1] text-[#2B4233] scale-110 shadow-lg' 
+                        : 'text-white/40 scale-90' // Contraste nítido
+                      }`}
+                    >
+                      {cat.name}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            /* VISTA ESCRITORIO: BOTONES FIJOS */
+            <div className="flex flex-wrap justify-center gap-1.5 pb-2">
+              {visibleCategories.map((cat) => (
+                <button 
+                  key={cat.id} 
+                  onClick={() => setActiveCategory(cat.name)} 
+                  className={`px-3 py-1.5 rounded-full text-[8px] font-black uppercase transition-all shadow-sm ${
+                    activeCategory === cat.name 
+                      ? 'bg-[#EDB2D1] text-[#2B4233] scale-105' 
+                      : 'bg-white text-[#2B4233] hover:bg-gray-100'
+                  }`}
+                >
+                  {cat.name}
+                </button>
+              ))}
+            </div>
+          )}
         </nav>
       </header>
 

@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
+import { useTytaAlert } from "@/lib/useTytaAlert"; // Importamos la librería
+import TytaAlert from "@/components/ui/TytaAlert";   // Importamos el cartel
+
 import ProductAdminModal from "@/components/admin/ProductAdminModal";
 import AdminConfig from "@/components/admin/AdminConfig"; 
 import AdminProfile from "@/components/admin/AdminProfile";
@@ -17,12 +20,14 @@ export default function AdminPage() {
   const [isAdding, setIsAdding] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any | null>(null);
   
+  // ACTIVAMOS LA LIBRERÍA TYTA ALERT
+  const { alert, showAlert, closeAlert } = useTytaAlert();
+
   const [storeConfig, setStoreConfig] = useState({
     isClosedManual: false,
     isAlwaysOpen: false
   });
 
-  // FUNCIÓN DE CARGA (Ahora accesible para el Header)
   async function fetchInitialData() {
     const { data: catData } = await supabase.from('categories').select('*').order('name');
     const { data: prodData } = await supabase.from('products').select('*').order('name');
@@ -81,7 +86,6 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-[#FDFBF7] p-4 sm:p-6 font-josefin text-[#2B4233]">
       
-      {/* HEADER CORREGIDO */}
       <AdminHeader 
         activeTab={activeTab} 
         setActiveTab={setActiveTab} 
@@ -96,11 +100,17 @@ export default function AdminPage() {
             products={products} 
             categories={categories} 
             onEdit={setEditingProduct} 
-            onDelete={async (id) => { 
-              if (confirm("¿Estás seguro de eliminar este producto?")) { 
-                await supabase.from('products').delete().eq('id', id); 
-                fetchInitialData(); 
-              } 
+            onDelete={(id) => { 
+              // REEMPLAZO DEL CONFIRM NATIVO POR TYTA ALERT (Binario)
+              showAlert(
+                "danger", 
+                "¿ELIMINAR PRODUCTO?", 
+                "Esta delicia desaparecerá de la vitrina digital permanentemente.",
+                async () => {
+                  await supabase.from('products').delete().eq('id', id); 
+                  fetchInitialData();
+                }
+              );
             }}
           />
         )}
@@ -135,6 +145,9 @@ export default function AdminPage() {
         onSave={handleSaveProduct}
         categories={categories}
       />
+
+      {/* RENDERIZADO DEL CARTEL UNIFICADO */}
+      <TytaAlert alert={alert} onCancel={closeAlert} />
     </div>
   );
 }
