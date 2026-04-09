@@ -106,12 +106,12 @@ export default function AdminHeader({
                 </div>
               </div>
 
-              {/* 2. CATEGORÍAS (Centro) */}
+              {/* 2. CATEGORÍAS (Centro - Ancho Fijo) */}
               <button 
                 onClick={() => setShowCatModal(true)} 
-                className="px-4 py-1.5 bg-white border border-[#EDB2D1]/30 text-[#2B4233]/70 text-[8px] font-black uppercase tracking-[0.2em] rounded-full hover:bg-[#FDFBF7] transition-all flex items-center gap-1.5 h-8"
+                className="w-40 h-8 bg-white border border-[#EDB2D1]/30 text-[#2B4233]/70 text-[8px] font-black uppercase tracking-[0.2em] rounded-full hover:bg-[#FDFBF7] transition-all flex items-center justify-center gap-1.5 shadow-sm"
               >
-                📂 Categorías
+                📂 CATEGORÍAS
               </button>
 
               {/* 3. TIENDA ONLINE (Derecha - Bolsa Rosa Tyta) */}
@@ -133,12 +133,12 @@ export default function AdminHeader({
               </div>
             </div>
 
-            {/* FILA 2: GESTIONAR PEDIDOS (Abajo, alineado al botón de arriba) */}
+            {/* FILA 2: GESTIONAR PEDIDOS (Alineado con Categorías arriba) */}
             <div className="flex justify-center lg:ml-10">
               <Link 
                 href="/admin/pedidos" 
                 target="_blank" 
-                className="px-4 py-1.5 bg-white border border-[#EDB2D1]/30 text-[#2B4233]/70 text-[8px] font-black uppercase tracking-[0.2em] rounded-full hover:bg-[#FDFBF7] transition-all flex items-center gap-1.5 h-8"
+                className="w-40 h-8 bg-white border border-[#EDB2D1]/30 text-[#2B4233]/70 text-[8px] font-black uppercase tracking-[0.2em] rounded-full hover:bg-[#FDFBF7] transition-all flex items-center justify-center gap-1.5 shadow-sm"
               >
                 📦 GESTIONAR PEDIDOS
               </Link>
