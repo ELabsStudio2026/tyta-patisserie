@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { useTytaAlert } from "@/lib/useTytaAlert"; // Importamos la librería
-import TytaAlert from "@/components/ui/TytaAlert";   // Importamos el cartel
+import { useTytaAlert } from "@/lib/useTytaAlert"; 
+import TytaAlert from "@/components/ui/TytaAlert";   
 
 import ProductAdminModal from "@/components/admin/ProductAdminModal";
 import AdminConfig from "@/components/admin/AdminConfig"; 
@@ -12,15 +12,16 @@ import AdminInventory from "@/components/admin/AdminInventory";
 import AdminHeader from "@/components/admin/AdminHeader";
 import AdminStoreSettings from "@/components/admin/AdminStoreSettings";
 
+import AdminCampaigns from "@/components/admin/AdminCampaigns";
+
 export default function AdminPage() {
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [mounted, setMounted] = useState(false); 
-  const [activeTab, setActiveTab] = useState<'productos' | 'master' | 'config' | 'horarios'>('productos');
+  const [activeTab, setActiveTab] = useState<'productos' | 'master' | 'config' | 'horarios'| 'campañas'>('productos');
   const [isAdding, setIsAdding] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any | null>(null);
   
-  // ACTIVAMOS LA LIBRERÍA TYTA ALERT
   const { alert, showAlert, closeAlert } = useTytaAlert();
 
   const [storeConfig, setStoreConfig] = useState({
@@ -100,9 +101,8 @@ export default function AdminPage() {
             products={products} 
             categories={categories} 
             onEdit={setEditingProduct} 
-            onRefresh={fetchInitialData} // <--- ESTA LÍNEA ARREGLA EL ERROR DE VERCEL
+            onRefresh={fetchInitialData}
             onDelete={(id) => { 
-              // REEMPLAZO DEL CONFIRM NATIVO POR TYTA ALERT (Binario)
               showAlert(
                 "danger", 
                 "¿ELIMINAR PRODUCTO?", 
@@ -115,6 +115,9 @@ export default function AdminPage() {
             }}
           />
         )}
+
+        {/* --- SECCIÓN DE CAMPAÑAS AGREGADA --- */}
+        {activeTab === 'campañas' && <AdminCampaigns />}
 
         {activeTab === 'master' && (
           <div className="flex flex-col items-center gap-6 py-10">
@@ -147,7 +150,6 @@ export default function AdminPage() {
         categories={categories}
       />
 
-      {/* RENDERIZADO DEL CARTEL UNIFICADO */}
       <TytaAlert alert={alert} onCancel={closeAlert} />
     </div>
   );

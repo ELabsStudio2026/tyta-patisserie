@@ -8,7 +8,7 @@ interface AlertState {
   type: AlertType;
   title: string;
   message: string;
-  isBinary: boolean; // <-- Nueva propiedad
+  isBinary: boolean;
   onConfirm: () => void;
 }
 
@@ -28,7 +28,8 @@ export function useTytaAlert() {
       type,
       title,
       message,
-      isBinary: type === "danger", // Si es danger, automáticamente es binario (SÍ/NO)
+      // Solo es binario si es peligroso O si pasamos una función de confirmación
+      isBinary: type === "danger" || (!!onConfirm && type !== "success"), 
       onConfirm: onConfirm || (() => setAlert((prev) => ({ ...prev, isOpen: false }))),
     });
   };

@@ -6,7 +6,7 @@ import { useTytaAlert } from "@/lib/useTytaAlert";
 import TytaAlert from "@/components/ui/TytaAlert";
 
 interface AdminHeaderProps {
-  activeTab: 'productos' | 'master' | 'config' | 'horarios';
+  activeTab: 'productos' | 'master' | 'config' | 'horarios' | 'campañas';
   setActiveTab: (tab: any) => void;
   onNewProduct: () => void;
   categories: any[];
@@ -36,11 +36,13 @@ export default function AdminHeader({
     }
   };
 
+  // LISTA DE TABS ACTUALIZADA CON CAMPAÑAS
   const tabs = [
     { id: 'productos', label: 'Productos' },
     { id: 'master', label: 'Master' },
     { id: 'config', label: 'Config' },
-    { id: 'horarios', label: 'Horarios' }
+    { id: 'horarios', label: 'Horarios' },
+    { id: 'campañas', label: '📢 Campañas' }
   ];
 
   const infiniteTabs = [...tabs, ...tabs, ...tabs];
@@ -88,69 +90,39 @@ export default function AdminHeader({
           <h1 className="text-4xl lg:text-5xl font-diner uppercase text-[#2B4233] leading-none">Gestión Tyta</h1>
           
           <div className="flex flex-col items-center lg:items-start gap-3">
-            {/* FILA 1: CÁMARA | CATEGORÍAS | BOLSA ROSA */}
             <div className="flex items-center gap-2">
-              
-              {/* 1. CÁMARA (Izquierda) */}
               <div className="group relative">
-                <button 
-                  onClick={forzarPermisoCamara}
-                  className="w-8 h-8 flex items-center justify-center bg-[#FDFBF7] border border-[#EDB2D1]/30 rounded-full text-sm hover:scale-110 transition-all active:bg-[#EDB2D1]/10"
-                >
-                  📸
-                </button>
+                <button onClick={forzarPermisoCamara} className="w-8 h-8 flex items-center justify-center bg-[#FDFBF7] border border-[#EDB2D1]/30 rounded-full text-sm hover:scale-110 transition-all active:bg-[#EDB2D1]/10">📸</button>
                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 hidden group-hover:block z-50 animate-in fade-in zoom-in-95">
-                  <div className="bg-[#2B4233] text-[#EDB2D1] text-[7px] font-black uppercase tracking-widest px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap border border-[#EDB2D1]/10">
-                    Probar Cámara
-                  </div>
+                  <div className="bg-[#2B4233] text-[#EDB2D1] text-[7px] font-black uppercase tracking-widest px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap border border-[#EDB2D1]/10">Probar Cámara</div>
                 </div>
               </div>
 
-              {/* 2. CATEGORÍAS (Centro - Ancho Fijo) */}
-              <button 
-                onClick={() => setShowCatModal(true)} 
-                className="w-40 h-8 bg-white border border-[#EDB2D1]/30 text-[#2B4233]/70 text-[8px] font-black uppercase tracking-[0.2em] rounded-full hover:bg-[#FDFBF7] transition-all flex items-center justify-center gap-1.5 shadow-sm"
-              >
-                📂 CATEGORÍAS
-              </button>
+              <button onClick={() => setShowCatModal(true)} className="w-40 h-8 bg-white border border-[#EDB2D1]/30 text-[#2B4233]/70 text-[8px] font-black uppercase tracking-[0.2em] rounded-full hover:bg-[#FDFBF7] transition-all flex items-center justify-center gap-1.5 shadow-sm">📂 CATEGORÍAS</button>
 
-              {/* 3. TIENDA ONLINE (Derecha - Bolsa Rosa Tyta) */}
               <div className="group relative">
-                <Link 
-                  href="/tienda" 
-                  target="_blank" 
-                  className="w-8 h-8 bg-[#EDB2D1] rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
-                >
+                <Link href="/tienda" target="_blank" className="w-8 h-8 bg-[#EDB2D1] rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                   </svg>
                 </Link>
                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 hidden group-hover:block z-50 animate-in fade-in zoom-in-95">
-                  <div className="bg-[#EDB2D1] text-[#2B4233] text-[7px] font-black uppercase tracking-widest px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap border border-[#2B4233]/10">
-                    Tienda Online
-                  </div>
+                  <div className="bg-[#EDB2D1] text-[#2B4233] text-[7px] font-black uppercase tracking-widest px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap border border-[#2B4233]/10">Tienda Online</div>
                 </div>
               </div>
             </div>
 
-            {/* FILA 2: GESTIONAR PEDIDOS (Alineado con Categorías arriba) */}
             <div className="flex justify-center lg:ml-10">
-              <Link 
-                href="/admin/pedidos" 
-                target="_blank" 
-                className="w-40 h-8 bg-white border border-[#EDB2D1]/30 text-[#2B4233]/70 text-[8px] font-black uppercase tracking-[0.2em] rounded-full hover:bg-[#FDFBF7] transition-all flex items-center justify-center gap-1.5 shadow-sm"
-              >
-                📦 GESTIONAR PEDIDOS
-              </Link>
+              <Link href="/admin/pedidos" target="_blank" className="w-40 h-8 bg-white border border-[#EDB2D1]/30 text-[#2B4233]/70 text-[8px] font-black uppercase tracking-[0.2em] rounded-full hover:bg-[#FDFBF7] transition-all flex items-center justify-center gap-1.5 shadow-sm">📦 GESTIONAR PEDIDOS</Link>
             </div>
           </div>
         </div>
 
-        {/* NAVEGACIÓN CENTRAL */}
+        {/* NAVEGACIÓN CENTRAL (SPINNER INFINITO) */}
         <nav className="relative w-full lg:w-auto max-w-[320px] lg:max-w-none">
-          <div className="hidden lg:flex bg-[#FDFBF7] p-1.5 rounded-full border border-gray-100 shadow-inner">
+          <div className="hidden lg:flex bg-[#FDFBF7] p-1.5 rounded-full border border-gray-100 shadow-inner overflow-hidden">
             {tabs.map((tab) => (
-              <button key={tab.id} onClick={() => setActiveTab(tab.id as any)} className={`px-7 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all ${activeTab === tab.id ? 'bg-[#2B4233] text-[#EDB2D1] shadow-md' : 'text-gray-400 hover:text-[#2B4233]'}`}>
+              <button key={tab.id} onClick={() => setActiveTab(tab.id as any)} className={`px-6 py-2.5 rounded-full text-[9px] font-black uppercase tracking-[0.15em] transition-all whitespace-nowrap ${activeTab === tab.id ? 'bg-[#2B4233] text-[#EDB2D1] shadow-md' : 'text-gray-400 hover:text-[#2B4233]'}`}>
                 {tab.label}
               </button>
             ))}
@@ -161,7 +133,7 @@ export default function AdminHeader({
               {infiniteTabs.map((tab, index) => {
                 const isActive = activeTab === tab.id && index >= tabs.length && index < tabs.length * 2;
                 return (
-                  <button key={`${tab.id}-${index}`} data-active={isActive} onClick={() => setActiveTab(tab.id as any)} className={`snap-center flex-none px-5 py-2 rounded-full text-[9px] font-black uppercase tracking-[0.15em] transition-all ${isActive ? 'bg-[#2B4233] text-[#EDB2D1] scale-105' : 'text-[#2B4233]/40 scale-90'}`}>
+                  <button key={`${tab.id}-${index}`} data-active={isActive} onClick={() => setActiveTab(tab.id as any)} className={`snap-center flex-none px-5 py-2 rounded-full text-[9px] font-black uppercase tracking-[0.15em] transition-all whitespace-nowrap ${isActive ? 'bg-[#2B4233] text-[#EDB2D1] scale-105' : 'text-[#2B4233]/40 scale-90'}`}>
                     {tab.label}
                   </button>
                 );
